@@ -139,3 +139,9 @@ pylint_aspect = _python_tool_aspect(
     runner = "@swf_bazel_rules_quality//quality/private/python/tools:pylint_runner",
     config = "@swf_bazel_rules_quality//quality:quality_pylint_config",
 )
+
+black_aspect = _python_tool_aspect(
+    tool = "@swf_bazel_rules_quality//quality/private/python:black",
+    runner = "@swf_bazel_rules_quality//quality/private/python/tools:black_runner",
+    config = "@swf_bazel_rules_quality//quality:quality_black_config",
+)

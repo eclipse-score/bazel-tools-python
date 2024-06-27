@@ -12,3 +12,11 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
 )
+
+py_binary(
+    name = "black_runner",
+    srcs = ["black_runner.py"],
+    data = ["@swf_bazel_rules_quality//quality/private/python:black"],
+    visibility = ["//visibility:public"],
+    deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
+)

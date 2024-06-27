@@ -15,3 +15,10 @@ py_console_script_binary(
         requirement("tomlkit"),
     ],
 )
+
+py_console_script_binary(
+    name = "black",
+    pkg = requirement("black"),
+    script = "black",
+    visibility = ["//visibility:public"],
+)
