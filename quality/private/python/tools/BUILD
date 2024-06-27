@@ -21,3 +21,11 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
 )
+
+py_binary(
+    name = "isort_runner",
+    srcs = ["isort_runner.py"],
+    data = ["@swf_bazel_rules_quality//quality/private/python:isort"],
+    visibility = ["//visibility:public"],
+    deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
+)

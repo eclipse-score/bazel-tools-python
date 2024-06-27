@@ -22,3 +22,10 @@ py_console_script_binary(
     script = "black",
     visibility = ["//visibility:public"],
 )
+
+py_console_script_binary(
+    name = "isort",
+    pkg = requirement("isort"),
+    script = "isort",
+    visibility = ["//visibility:public"],
+)

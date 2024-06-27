@@ -145,3 +145,9 @@ black_aspect = _python_tool_aspect(
     runner = "@swf_bazel_rules_quality//quality/private/python/tools:black_runner",
     config = "@swf_bazel_rules_quality//quality:quality_black_config",
 )
+
+isort_aspect = _python_tool_aspect(
+    tool = "@swf_bazel_rules_quality//quality/private/python:isort",
+    runner = "@swf_bazel_rules_quality//quality/private/python/tools:isort_runner",
+    config = "@swf_bazel_rules_quality//quality:quality_isort_config",
+)
