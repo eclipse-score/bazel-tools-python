@@ -34,14 +34,16 @@ class LinterSubprocessError(Exception):
         self,
         commands: str,
         return_code: str,
-        message: str,
+        stdout: str,
+        stderr: str,
     ):
         self.commands = commands
         self.return_code = return_code
-        self.message = message
+        self.stdout = stdout
+        self.stderr = stderr
         super().__init__(
             f'The command "{self.commands}" returned code "{self.return_code}"'
-            f" and the following error message:\n{self.message}"
+            f" and the following error message:\n{stderr or stdout}"
         )
 
 
@@ -76,7 +78,8 @@ def execute_subprocess(
         raise LinterSubprocessError(
             commands=commands,
             return_code=exception.returncode,
-            message=exception.stderr or exception.stdout,
+            stdout=exception.stdout,
+            stderr=exception.stderr,
         ) from None
 
     return SubprocessInfo(
