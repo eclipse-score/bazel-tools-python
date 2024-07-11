@@ -1,5 +1,5 @@
 load("@swf_bazel_rules_quality//third_party/pip:requirements.bzl", "requirement")
-load("@swf_bazel_rules_quality_rules_python//python/entry_points:py_console_script_binary.bzl", "py_console_script_binary")
+load("@swf_bazel_rules_quality_python//:defs.bzl", "py_console_script_binary")
 
 py_console_script_binary(
     name = "pylint",
