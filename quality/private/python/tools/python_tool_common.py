@@ -106,7 +106,7 @@ class AspectArguments:
             resolved_paths = set()
             for path in paths:
                 try:
-                    if path.startswith(self.tool_root):
+                    if pathlib.Path(path).is_relative_to(self.tool_root):
                         # This is the usual branch for local files or libraries.
                         # The code go through here when path is relative to the sandbox root.
                         resolved_paths.add(pathlib.Path(path).relative_to(self.tool_root).resolve(strict=True))
