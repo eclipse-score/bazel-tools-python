@@ -34,7 +34,7 @@ def check_with_pylint(aspect_arguments: python_tool_common.AspectArguments) -> N
                 "no",
                 # Files to lint
                 "--",
-                *aspect_arguments.target_files,
+                *map(str, aspect_arguments.target_files),
             ],
             env=pylint_env,
         )

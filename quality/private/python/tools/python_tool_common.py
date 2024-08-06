@@ -6,7 +6,7 @@ import itertools
 import os
 import pathlib
 import subprocess
-import typing
+import typing as t
 
 
 class PythonPathNotFoundError(Exception):
@@ -21,7 +21,7 @@ class PythonPathNotFoundError(Exception):
 class LinterFindingAsError(Exception):
     """Raised when a linter finds a finding treats it as an error."""
 
-    def __init__(self, path: str, tool: str):
+    def __init__(self, path: t.Union[str, pathlib.Path], tool: str):
         self.path = path
         self.tool = tool
         super().__init__(f'At least one {self.tool} finding was treated as error. See its output at "{self.path}"')
@@ -33,7 +33,7 @@ class LinterSubprocessError(Exception):
     def __init__(
         self,
         commands: str,
-        return_code: str,
+        return_code: t.Union[str, int],
         stdout: str,
         stderr: str,
     ):
@@ -53,13 +53,13 @@ class SubprocessInfo:
 
     stdout: str
     stderr: str
-    return_code: int
+    return_code: t.Union[str, int]
 
 
 def execute_subprocess(
     commands: list[str],
     cwd: pathlib.Path = pathlib.Path.cwd(),
-    env: typing.Mapping[str, str] = None,
+    env: t.Optional[t.Mapping[str, str]] = None,
 ) -> SubprocessInfo:
     """Function that calls a subprocess and expects a zero return code."""
     try:
@@ -76,7 +76,7 @@ def execute_subprocess(
         )
     except subprocess.CalledProcessError as exception:
         raise LinterSubprocessError(
-            commands=commands,
+            commands=str(commands),
             return_code=exception.returncode,
             stdout=exception.stdout,
             stderr=exception.stderr,
@@ -93,16 +93,16 @@ def execute_subprocess(
 class AspectArguments:
     """Class that provides a clean and verified interface between aspect and runner."""
 
-    target_imports: list[str]
-    target_dependencies: list[str]
-    target_files: list[str]
+    target_imports: set[pathlib.Path]
+    target_dependencies: set[pathlib.Path]
+    target_files: set[pathlib.Path]
     tool: pathlib.Path
     tool_config: pathlib.Path
     tool_output: pathlib.Path
     tool_root: str
 
     def __post_init__(self):
-        def resolve_paths(paths: list[str], prepend_path: str = ""):
+        def resolve_paths(paths: list[str], prepend_path: str = "") -> set[pathlib.Path]:
             resolved_paths = set()
             for path in paths:
                 try:

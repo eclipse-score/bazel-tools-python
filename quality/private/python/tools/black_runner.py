@@ -23,7 +23,7 @@ def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> No
             "--diff",
             "--config",
             f"{aspect_arguments.tool_config}",
-            *aspect_arguments.target_files,
+            *map(str, aspect_arguments.target_files),
         ],
     )
 

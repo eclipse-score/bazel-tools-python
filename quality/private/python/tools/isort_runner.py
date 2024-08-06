@@ -26,7 +26,7 @@ def check_with_isort(aspect_arguments: python_tool_common.AspectArguments) -> No
                 "--sp",
                 f"{aspect_arguments.tool_config}",
                 "--",
-                *aspect_arguments.target_files,
+                *map(str, aspect_arguments.target_files),
             ],
         )
     except python_tool_common.LinterSubprocessError as exception:
