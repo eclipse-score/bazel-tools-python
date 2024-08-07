@@ -29,3 +29,11 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
 )
+
+py_binary(
+    name = "mypy_runner",
+    srcs = ["mypy_runner.py"],
+    data = ["@swf_bazel_rules_quality//quality/private/python:mypy"],
+    visibility = ["//visibility:public"],
+    deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
+)

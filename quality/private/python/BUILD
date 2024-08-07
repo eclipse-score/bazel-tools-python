@@ -29,3 +29,14 @@ py_console_script_binary(
     script = "isort",
     visibility = ["//visibility:public"],
 )
+
+py_console_script_binary(
+    name = "mypy",
+    pkg = requirement("mypy"),
+    script = "mypy",
+    visibility = ["//visibility:public"],
+    deps = [
+        requirement("types-jsonschema"),
+        requirement("types-PyYAML"),
+    ],
+)
