@@ -1,10 +1,11 @@
 """A runner that interfaces python tool aspect and runs black on a list of files."""
 
 import logging
+import pathlib
 
 from quality.private.python.tools import python_tool_common
 
-BLACK_DEFAULT_ERROR_MSG = "file would be reformatted"
+WOULD_REFORMAT_MSG = "would reformat"
 
 
 def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> None:
@@ -14,8 +15,10 @@ def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> No
         The arguments received from the python_tool_aspect and already processed by
          python_tool_common module.
     :raises LinterFindingAsError:
-        If black finds a file to be formatted.
+        If black finds at least one file to be formatted.
     """
+
+    findings = python_tool_common.Findings()
 
     black_output = python_tool_common.execute_subprocess(
         [
@@ -27,14 +30,23 @@ def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> No
         ],
     )
 
-    aspect_arguments.tool_output.write_text(black_output.stdout)
-    logging.info("Created black output at: %s", aspect_arguments.tool_output)
+    for line in black_output.stderr.splitlines():
+        if WOULD_REFORMAT_MSG in line:
+            file = line.lstrip(WOULD_REFORMAT_MSG)
+            findings += [
+                python_tool_common.Finding(
+                    path=pathlib.Path(file),
+                    message="Should be reformatted.",
+                    severity=python_tool_common.Severity.WARN,
+                    tool="black",
+                    rule_id="formatting",
+                )
+            ]
 
-    if BLACK_DEFAULT_ERROR_MSG in black_output.stderr:
-        raise python_tool_common.LinterFindingAsError(
-            path=aspect_arguments.tool_output,
-            tool=aspect_arguments.tool.name,
-        )
+    aspect_arguments.tool_output.write_text(str(findings))
+    if findings:
+        logging.info("Created black output at: %s", aspect_arguments.tool_output)
+        raise python_tool_common.LinterFindingAsError(findings=findings)
 
 
 def main():

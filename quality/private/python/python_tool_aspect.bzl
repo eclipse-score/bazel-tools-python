@@ -35,7 +35,7 @@ def _python_tool_aspect_implementation(target, ctx):
                 sources_to_run.append(source.label.name)
 
     if sources_to_run:
-        output_file = ctx.actions.declare_file(ctx.executable._runner.basename + "_output_" + target.label.name)
+        output_file = ctx.actions.declare_file(ctx.executable._runner.basename + "_output_" + target.label.name + ".txt")
         output.append(output_file)
 
         deps = getattr(target[PythonCollectInfo], "deps")

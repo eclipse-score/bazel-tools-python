@@ -2,11 +2,63 @@
 
 import argparse
 import dataclasses
+import enum
 import itertools
+import json
 import os
 import pathlib
 import subprocess
 import typing as t
+
+
+@enum.unique
+class Severity(str, enum.Enum):
+    """Enum for severity types."""
+
+    WARN = "WARN"
+    ERROR = "ERROR"
+    INFO = "INFO"
+
+
+class FindingsJSONEncoder(json.JSONEncoder):
+    """Encodes dataclass objects using asdict and other objects as strings."""
+
+    def default(self, o):
+        """Overrides default encoding."""
+        if dataclasses.is_dataclass(o):
+            return dataclasses.asdict(o)
+        return str(o)
+
+
+@dataclasses.dataclass
+class Finding:
+    """Defines a finding."""
+
+    path: pathlib.Path
+    message: str
+    severity: Severity
+    tool: str
+    rule_id: str
+    line: t.Optional[int] = None
+    column: t.Optional[int] = None
+
+    def __str__(self):
+        output = f"{self.path}"
+        output += f":{self.line}" if self.line else ""
+        output += f":{self.column}" if self.line and self.column else ""
+        output += f": {self.message} [{self.tool}:{self.rule_id}]"
+        return output
+
+
+class Findings(t.List[Finding]):
+    """Defines a list of findings."""
+
+    def to_json_file(self, file: pathlib.Path) -> None:
+        """Dumps a list of findings to a JSON file."""
+        file.write_text(json.dumps(self, cls=FindingsJSONEncoder, indent=2), encoding="utf-8")
+
+    def __str__(self) -> str:
+        return "\n".join([str(finding) for finding in self])
 
 
 class PythonPathNotFoundError(Exception):
@@ -18,7 +70,7 @@ class PythonPathNotFoundError(Exception):
         super().__init__(f'The path "{self.path}" was not found. Therefore {self.tool} cannot properly run.')
 
 
-class LinterFindingAsError(Exception):
+class DeprecatedLinterFindingAsError(Exception):
     """Raised when a linter finds a finding treats it as an error."""
 
     def __init__(self, path: t.Union[str, pathlib.Path], tool: str):
@@ -27,12 +79,20 @@ class LinterFindingAsError(Exception):
         super().__init__(f'At least one {self.tool} finding was treated as error. See its output at "{self.path}"')
 
 
+class LinterFindingAsError(SystemExit):
+    """Raised when a linter finds a finding treats it as an error."""
+
+    def __init__(self, findings: Findings):
+        self.findings = findings
+        super().__init__(f"\nThe following findings were found:\n{self.findings}\n")
+
+
 class LinterSubprocessError(Exception):
     """Raised when a linter subprocess fails."""
 
     def __init__(
         self,
-        commands: str,
+        commands: t.List[str],
         return_code: t.Union[str, int],
         stdout: str,
         stderr: str,
@@ -76,7 +136,7 @@ def execute_subprocess(
         )
     except subprocess.CalledProcessError as exception:
         raise LinterSubprocessError(
-            commands=str(commands),
+            commands=commands,
             return_code=exception.returncode,
             stdout=exception.stdout,
             stderr=exception.stderr,

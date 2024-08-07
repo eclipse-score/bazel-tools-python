@@ -45,7 +45,7 @@ def check_with_isort(aspect_arguments: python_tool_common.AspectArguments) -> No
     logging.info("Created isort output at: %s", aspect_arguments.tool_output)
 
     if isort_output.return_code:
-        raise python_tool_common.LinterFindingAsError(
+        raise python_tool_common.DeprecatedLinterFindingAsError(
             path=aspect_arguments.tool_output,
             tool=aspect_arguments.tool.name,
         )
