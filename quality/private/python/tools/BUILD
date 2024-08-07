@@ -7,25 +7,25 @@ py_library(
 )
 
 py_binary(
-    name = "pylint_runner",
-    srcs = ["pylint_runner.py"],
-    data = ["@swf_bazel_rules_quality//quality/private/python:pylint"],
+    name = "pylint",
+    srcs = ["pylint.py"],
+    data = ["@swf_bazel_rules_quality//quality/private/python:pylint_entry_point"],
     visibility = ["//visibility:public"],
     deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
 )
 
 py_binary(
-    name = "black_runner",
-    srcs = ["black_runner.py"],
-    data = ["@swf_bazel_rules_quality//quality/private/python:black"],
+    name = "black",
+    srcs = ["black.py"],
+    data = ["@swf_bazel_rules_quality//quality/private/python:black_entry_point"],
     visibility = ["//visibility:public"],
     deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
 )
 
 py_binary(
-    name = "isort_runner",
-    srcs = ["isort_runner.py"],
-    data = ["@swf_bazel_rules_quality//quality/private/python:isort"],
+    name = "isort",
+    srcs = ["isort.py"],
+    data = ["@swf_bazel_rules_quality//quality/private/python:isort_entry_point"],
     visibility = ["//visibility:public"],
     deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
 )

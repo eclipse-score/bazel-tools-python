@@ -64,7 +64,7 @@ def _python_tool_aspect_implementation(target, ctx):
                 sources_to_run.append(source.label.name)
 
     if sources_to_run:
-        output_file = ctx.actions.declare_file(ctx.executable._tool.basename + "_output_" + target.label.name)
+        output_file = ctx.actions.declare_file(ctx.executable._runner.basename + "_output_" + target.label.name)
         output.append(output_file)
 
         imports = target[PyInfo].imports.to_list()
@@ -92,7 +92,7 @@ def _python_tool_aspect_implementation(target, ctx):
             tools = [ctx.executable._runner, ctx.executable._tool, target[DefaultInfo].files_to_run],
             executable = ctx.executable._runner,
             arguments = [args],
-            progress_message = "Running {tool} on: {target_name}".format(tool = ctx.executable._tool.basename, target_name = target.label.name),
+            progress_message = "Running {tool} on: {target_name}".format(tool = ctx.executable._runner.basename, target_name = target.label.name),
         )
 
     return [OutputGroupInfo(python_tool_output = depset(output))]
@@ -135,20 +135,20 @@ def _python_tool_aspect(tool, runner, config):
     )
 
 pylint_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:pylint",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:pylint_runner",
+    tool = "@swf_bazel_rules_quality//quality/private/python:pylint_entry_point",
+    runner = "@swf_bazel_rules_quality//quality/private/python/tools:pylint",
     config = "@swf_bazel_rules_quality//quality:quality_pylint_config",
 )
 
 black_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:black",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:black_runner",
+    tool = "@swf_bazel_rules_quality//quality/private/python:black_entry_point",
+    runner = "@swf_bazel_rules_quality//quality/private/python/tools:black",
     config = "@swf_bazel_rules_quality//quality:quality_black_config",
 )
 
 isort_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:isort",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:isort_runner",
+    tool = "@swf_bazel_rules_quality//quality/private/python:isort_entry_point",
+    runner = "@swf_bazel_rules_quality//quality/private/python/tools:isort",
     config = "@swf_bazel_rules_quality//quality:quality_isort_config",
 )
 
