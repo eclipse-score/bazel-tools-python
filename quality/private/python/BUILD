@@ -38,6 +38,15 @@ py_console_script_binary(
     deps = [
         requirement("types-jsonschema"),
         requirement("types-PyYAML"),
+        requirement("types-requests"),
+        requirement("types-typed-ast"),
+        requirement("types-six"),
+        requirement("types-setuptools"),
+        requirement("types-python-dateutil"),
+        requirement("types-certifi"),
+        requirement("types-chardet"),
+        requirement("types-urllib3"),
+        requirement("types-html5lib"),
     ],
 )
 
