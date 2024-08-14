@@ -1,6 +1,7 @@
 """A runner that interfaces python tool aspect and runs isort on a list of files."""
 
 import logging
+import pathlib
 
 from quality.private.python.tools import python_tool_common
 
@@ -25,6 +26,8 @@ def check_with_isort(aspect_arguments: python_tool_common.AspectArguments) -> No
                 "--diff",
                 "--sp",
                 f"{aspect_arguments.tool_config}",
+                "--src",
+                f"{pathlib.Path.cwd()}",
                 "--",
                 *map(str, aspect_arguments.target_files),
             ],

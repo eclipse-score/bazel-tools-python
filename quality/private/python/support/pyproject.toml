@@ -1,0 +1,34 @@
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint]
+max-line-length=120
+
+[tool.pylint.messages_control]
+disable = [
+    "duplicate-code",
+    "logging-fstring-interpolation",
+]
+
+[tool.mypy]
+disallow_untyped_defs = false
+explicit_package_bases = true
+
+[tool.ruff]
+# Same as Black.
+line-length = 120
+indent-width = 4
+target-version = "py39"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
