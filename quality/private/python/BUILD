@@ -1,5 +1,5 @@
 load("@swf_bazel_rules_quality//third_party/pip:requirements.bzl", "requirement")
-load("@swf_bazel_rules_quality_python//:defs.bzl", "py_console_script_binary")
+load("@swf_bazel_rules_quality_python//:defs.bzl", "py_binary", "py_console_script_binary")
 
 py_console_script_binary(
     name = "pylint_entry_point",
@@ -39,4 +39,12 @@ py_console_script_binary(
         requirement("types-jsonschema"),
         requirement("types-PyYAML"),
     ],
+)
+
+py_binary(
+    name = "ruff_entry_point",
+    srcs = ["ruff_entry_point.py"],
+    main = "ruff_entry_point.py",
+    visibility = ["//visibility:public"],
+    deps = [requirement("ruff")],
 )

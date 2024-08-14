@@ -37,3 +37,23 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
 )
+
+py_binary(
+    name = "ruff_check",
+    srcs = ["ruff_check.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@swf_bazel_rules_quality//quality/private/python:ruff_entry_point",
+        "@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common",
+    ],
+)
+
+py_binary(
+    name = "ruff_format",
+    srcs = ["ruff_format.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@swf_bazel_rules_quality//quality/private/python:ruff_entry_point",
+        "@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common",
+    ],
+)

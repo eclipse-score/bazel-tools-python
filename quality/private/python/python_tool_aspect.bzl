@@ -157,3 +157,15 @@ mypy_aspect = _python_tool_aspect(
     runner = "@swf_bazel_rules_quality//quality/private/python/tools:mypy_runner",
     config = "@swf_bazel_rules_quality//quality:quality_mypy_config",
 )
+
+ruff_check_aspect = _python_tool_aspect(
+    tool = "@swf_bazel_rules_quality//quality/private/python:ruff_entry_point",
+    runner = "@swf_bazel_rules_quality//quality/private/python/tools:ruff_check",
+    config = "@swf_bazel_rules_quality//quality:quality_ruff_config",
+)
+
+ruff_format_aspect = _python_tool_aspect(
+    tool = "@swf_bazel_rules_quality//quality/private/python:ruff_entry_point",
+    runner = "@swf_bazel_rules_quality//quality/private/python/tools:ruff_format",
+    config = "@swf_bazel_rules_quality//quality:quality_ruff_config",
+)
