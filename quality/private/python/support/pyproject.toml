@@ -16,6 +16,7 @@ disable = [
 [tool.mypy]
 disallow_untyped_defs = false
 explicit_package_bases = true
+incremental = false
 
 [tool.ruff]
 # Same as Black.
