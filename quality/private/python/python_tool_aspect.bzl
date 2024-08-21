@@ -153,8 +153,8 @@ isort_aspect = _python_tool_aspect(
 )
 
 mypy_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:mypy",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:mypy_runner",
+    tool = "@swf_bazel_rules_quality//quality/private/python:mypy_entry_point",
+    runner = "@swf_bazel_rules_quality//quality/private/python/tools:mypy",
     config = "@swf_bazel_rules_quality//quality:quality_mypy_config",
 )
 

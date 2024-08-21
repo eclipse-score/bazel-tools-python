@@ -31,9 +31,9 @@ py_binary(
 )
 
 py_binary(
-    name = "mypy_runner",
-    srcs = ["mypy_runner.py"],
-    data = ["@swf_bazel_rules_quality//quality/private/python:mypy"],
+    name = "mypy",
+    srcs = ["mypy.py"],
+    data = ["@swf_bazel_rules_quality//quality/private/python:mypy_entry_point"],
     visibility = ["//visibility:public"],
     deps = ["@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common"],
 )

@@ -31,7 +31,7 @@ py_console_script_binary(
 )
 
 py_console_script_binary(
-    name = "mypy",
+    name = "mypy_entry_point",
     pkg = requirement("mypy"),
     script = "mypy",
     visibility = ["//visibility:public"],
