@@ -1,19 +1,8 @@
-"""Aspect that collects python targets dependencies and hands them to a tool runner."""
+"""Aspect that call a tool runner on top of a python target."""
 
-_excluded_main_label_names = [
-    "rules_python_entry_point_",
-]
-
-_excluded_workspaces_roots = [
-    "external/",
-]
-
-PythonToolInfo = provider(
-    doc = "Configuration structure for the python tool aspect.",
-    fields = {
-        "config": "Configuration file for the respective python tool tool.",
-    },
-)
+load("@swf_bazel_rules_quality//quality/private/python:python_collect_aspect.bzl", "python_collect_aspect")
+load("@swf_bazel_rules_quality//quality/private/python:python_helper.bzl", "is_valid_label")
+load("@swf_bazel_rules_quality//quality/private/python:python_providers.bzl", "PythonCollectInfo", "PythonToolInfo")
 
 def _python_tool_config_impl(ctx):
     return [PythonToolInfo(config = ctx.file.config)]
@@ -27,37 +16,19 @@ python_tool_config = rule(
     },
 )
 
-def _is_valid_label(label, excluded_labels, excluded_workspaces):
-    """Check if a given label is valid.
-
-    To validate a given label this functions checks its name and workspace.
-    """
-
-    for excluded_workspace_root in excluded_workspaces:
-        if excluded_workspace_root in label.workspace_root:
-            return False
-    for excluded_label in excluded_labels:
-        if excluded_label in label.name:
-            return False
-    return True
-
 def _python_tool_aspect_implementation(target, ctx):
     """Python tool aspect implementation."""
 
     output = []
 
-    if not PyInfo in target:
+    if not PyInfo in target or not is_valid_label(target.label):
         return [OutputGroupInfo(python_tool_output = depset([]))]
-
-    for excluded_path in _excluded_workspaces_roots:
-        if excluded_path in target.label.workspace_root:
-            return [OutputGroupInfo(python_tool_output = depset([]))]
 
     config = ctx.attr._config[PythonToolInfo].config
 
     sources_to_run = []
     for source in ctx.rule.attr.srcs:
-        if _is_valid_label(source.label, _excluded_main_label_names, _excluded_workspaces_roots) and source.label.name.endswith(".py"):
+        if is_valid_label(source.label) and source.label.name.endswith(".py"):
             if source.label.package:
                 sources_to_run.append(source.label.package + "/" + source.label.name)
             else:
@@ -67,19 +38,15 @@ def _python_tool_aspect_implementation(target, ctx):
         output_file = ctx.actions.declare_file(ctx.executable._runner.basename + "_output_" + target.label.name)
         output.append(output_file)
 
-        imports = target[PyInfo].imports.to_list()
-
-        dependencies = ["."]
-        for dep in ctx.rule.attr.deps:
-            if _is_valid_label(dep.label, [], []):
-                dependencies.append(dep.label.workspace_root)
+        deps = getattr(target[PythonCollectInfo], "deps")
+        imports = getattr(target[PythonCollectInfo], "imports")
 
         args = ctx.actions.args()
         args.use_param_file("@%s", use_always = True)
         args.set_param_file_format("multiline")
 
         args.add_all("--target-imports", imports, format_each = "%s")
-        args.add_all("--target-dependencies", dependencies, format_each = "%s")
+        args.add_all("--target-dependencies", deps, format_each = "%s")
         args.add_all("--target-files", sources_to_run, format_each = "%s")
         args.add("--tool", ctx.executable._tool.path, format = "%s")
         args.add("--tool-config", config.path, format = "%s")
@@ -132,6 +99,8 @@ def _python_tool_aspect(tool, runner, config):
             ),
         },
         required_providers = [PyInfo],
+        required_aspect_providers = [PythonCollectInfo],
+        requires = [python_collect_aspect],
     )
 
 pylint_aspect = _python_tool_aspect(
