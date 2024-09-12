@@ -57,7 +57,7 @@ class SubprocessInfo:
 
 
 def execute_subprocess(
-    commands: list[str],
+    commands: t.List[str],
     cwd: pathlib.Path = pathlib.Path.cwd(),
     env: t.Optional[t.Mapping[str, str]] = None,
 ) -> SubprocessInfo:
@@ -89,24 +89,36 @@ def execute_subprocess(
     )
 
 
+def _is_relative_to(path: pathlib.Path, root: pathlib.Path):
+    """Helper function that mimics what pathlib.Path.is_relative_to does.
+
+    This is needed to ensure support for python 3.8.
+    """
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False
+
+
 @dataclasses.dataclass
 class AspectArguments:
     """Class that provides a clean and verified interface between aspect and runner."""
 
-    target_imports: set[pathlib.Path]
-    target_dependencies: set[pathlib.Path]
-    target_files: set[pathlib.Path]
+    target_imports: t.Set[pathlib.Path]
+    target_dependencies: t.Set[pathlib.Path]
+    target_files: t.Set[pathlib.Path]
     tool: pathlib.Path
     tool_config: pathlib.Path
     tool_output: pathlib.Path
     tool_root: str
 
     def __post_init__(self):
-        def resolve_paths(paths: list[str], prepend_path: str = "") -> set[pathlib.Path]:
+        def resolve_paths(paths: t.List[str], prepend_path: str = "") -> t.Set[pathlib.Path]:
             resolved_paths = set()
             for path in paths:
                 try:
-                    if pathlib.Path(path).is_relative_to(self.tool_root):
+                    if _is_relative_to(pathlib.Path(path), pathlib.Path(self.tool_root)):
                         # This is the usual branch for local files or libraries.
                         # The code go through here when path is relative to the sandbox root.
                         resolved_paths.add(pathlib.Path(path).relative_to(self.tool_root).resolve(strict=True))
