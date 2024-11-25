@@ -6,6 +6,7 @@ import pathlib
 from quality.private.python.tools import python_tool_common
 
 ISORT_BAD_CHECK_ERROR_CODE = 1
+ISORT_ERROR_MSG = "ERROR: "
 
 
 def check_with_isort(aspect_arguments: python_tool_common.AspectArguments) -> None:
@@ -17,6 +18,7 @@ def check_with_isort(aspect_arguments: python_tool_common.AspectArguments) -> No
     :raises LinterFindingAsError:
         If isort finds a file to be formatted.
     """
+    findings = python_tool_common.Findings()
 
     try:
         isort_output = python_tool_common.execute_subprocess(
@@ -34,21 +36,30 @@ def check_with_isort(aspect_arguments: python_tool_common.AspectArguments) -> No
         )
     except python_tool_common.LinterSubprocessError as exception:
         if exception.return_code != ISORT_BAD_CHECK_ERROR_CODE:
-            raise
+            raise exception
+
         isort_output = python_tool_common.SubprocessInfo(
             exception.stdout,
             exception.stderr,
             exception.return_code,
         )
 
-    aspect_arguments.tool_output.write_text(isort_output.stdout)
-    logging.info("Created isort output at: %s", aspect_arguments.tool_output)
-
-    if isort_output.return_code:
-        raise python_tool_common.DeprecatedLinterFindingAsError(
-            path=aspect_arguments.tool_output,
-            tool=aspect_arguments.tool.name,
+    for line in isort_output.stderr.splitlines():
+        file = line.lstrip(ISORT_ERROR_MSG).split(" ")[0]
+        findings.append(
+            python_tool_common.Finding(
+                path=pathlib.Path(file),
+                message="Imports are incorrectly sorted and/or formatted.",
+                severity=python_tool_common.Severity.WARN,
+                tool="isort",
+                rule_id="imports_formatting",
+            )
         )
+
+    aspect_arguments.tool_output.write_text(str(findings))
+    if findings:
+        logging.info("Created isort output at: %s", aspect_arguments.tool_output)
+        raise python_tool_common.LinterFindingAsError(findings=findings)
 
 
 def main():
