@@ -72,5 +72,5 @@ def main():
     check_with_isort(aspect_arguments=args)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

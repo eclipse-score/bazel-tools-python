@@ -1,0 +1,9 @@
+load("@swf_bazel_rules_quality_python//:defs.bzl", "py_test")
+
+py_test(
+    name = "test_isort_runner",
+    srcs = ["test_isort_runner.py"],
+    deps = [
+        "//quality/private/python/tools:isort",
+    ],
+)

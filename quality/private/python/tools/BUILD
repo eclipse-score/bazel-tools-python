@@ -4,6 +4,7 @@ load("@swf_bazel_rules_quality_rules_python//python:defs.bzl", "py_library")
 py_library(
     name = "python_tool_common",
     srcs = ["python_tool_common.py"],
+    visibility = ["//quality/private/python/tools:__subpackages__"],
 )
 
 py_binary(
