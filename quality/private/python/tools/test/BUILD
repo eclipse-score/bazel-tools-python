@@ -7,3 +7,9 @@ py_test(
         "//quality/private/python/tools:isort",
     ],
 )
+
+py_test(
+    name = "test_black_runner",
+    srcs = ["test_black_runner.py"],
+    deps = ["//quality/private/python/tools:black"],
+)

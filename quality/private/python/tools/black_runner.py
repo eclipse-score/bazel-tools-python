@@ -31,8 +31,8 @@ def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> No
     )
 
     for line in black_output.stderr.splitlines():
-        if WOULD_REFORMAT_MSG in line:
-            file = line.lstrip(WOULD_REFORMAT_MSG)
+        if line.startswith(WOULD_REFORMAT_MSG):
+            file = line.removeprefix(WOULD_REFORMAT_MSG)
             findings += [
                 python_tool_common.Finding(
                     path=pathlib.Path(file),
@@ -59,5 +59,5 @@ def main():
     check_with_black(aspect_arguments=args)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()
