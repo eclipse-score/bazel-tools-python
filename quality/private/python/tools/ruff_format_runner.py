@@ -1,6 +1,7 @@
 """A runner that interfaces python tool aspect and runs ruff on a list of files."""
 
 import logging
+import pathlib
 
 from quality.private.python.tools import python_tool_common
 
@@ -15,7 +16,15 @@ def format_with_ruff(aspect_arguments: python_tool_common.AspectArguments) -> No
          python_tool_common module.
     :raises LinterFindingAsError:
         If ruff finds a file to be formatted.
+    :exit codes:
+    0 if Ruff terminates successfully, and no files would be formatted if --check
+    were not specified.
+    1 if Ruff terminates successfully, and one or more files would be formatted if
+    --check were not specified.
+    2 if Ruff terminates abnormally due to invalid configuration, invalid CLI options,
+    or an internal error.
     """
+    findings = python_tool_common.Findings()
 
     try:
         ruff_output = python_tool_common.execute_subprocess(
@@ -30,21 +39,31 @@ def format_with_ruff(aspect_arguments: python_tool_common.AspectArguments) -> No
         )
     except python_tool_common.LinterSubprocessError as exception:
         if exception.return_code != RUFF_BAD_CHECK_ERROR_CODE:
-            raise
+            raise exception
+
         ruff_output = python_tool_common.SubprocessInfo(
             exception.stdout,
             exception.stderr,
             exception.return_code,
         )
 
-    aspect_arguments.tool_output.write_text(ruff_output.stdout)
-    logging.info("Created ruff output at: %s", aspect_arguments.tool_output)
+        files = {file.lstrip("-").strip() for file in ruff_output.stdout.splitlines() if file.startswith("---")}
 
-    if ruff_output.return_code:
-        raise python_tool_common.DeprecatedLinterFindingAsError(
-            path=aspect_arguments.tool_output,
-            tool=aspect_arguments.tool.name,
-        )
+        for file in files:
+            findings.append(
+                python_tool_common.Finding(
+                    path=pathlib.Path(file),
+                    message="Should be reformatted.",
+                    severity=python_tool_common.Severity.WARN,
+                    tool="ruff_format",
+                    rule_id="formatting",
+                )
+            )
+
+    aspect_arguments.tool_output.write_text(str(findings))
+    if findings:
+        logging.info("Created ruff format output at: %s", aspect_arguments.tool_output)
+        raise python_tool_common.LinterFindingAsError(findings=findings)
 
 
 def main():

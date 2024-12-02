@@ -1,5 +1,6 @@
 """A runner that interfaces python tool aspect and runs ruff on a list of files."""
 
+import json
 import logging
 
 from quality.private.python.tools import python_tool_common
@@ -15,37 +16,49 @@ def check_with_ruff(aspect_arguments: python_tool_common.AspectArguments) -> Non
          python_tool_common module.
     :raises LinterFindingAsError:
         If ruff finds a file to be formatted.
+    :exit codes:
+    0 if no violations were found, or if all present violations were fixed
+    automatically.
+    1 if violations were found.
+    2 if Ruff terminates abnormally due to invalid configuration, invalid CLI options,
+    or an internal error.
     """
+    findings = python_tool_common.Findings()
 
     try:
-        ruff_output = python_tool_common.execute_subprocess(
+        python_tool_common.execute_subprocess(
             [
                 f"{aspect_arguments.tool}",
                 "check",
                 "--config",
                 f"{aspect_arguments.tool_config}",
                 "--unsafe-fixes",
-                "--diff",
+                "--output-format",
+                "json",
                 *map(str, aspect_arguments.target_files),
             ],
         )
     except python_tool_common.LinterSubprocessError as exception:
         if exception.return_code != RUFF_BAD_CHECK_ERROR_CODE:
-            raise
-        ruff_output = python_tool_common.SubprocessInfo(
-            exception.stdout,
-            exception.stderr,
-            exception.return_code,
-        )
+            raise exception
 
-    aspect_arguments.tool_output.write_text(ruff_output.stdout)
-    logging.info("Created ruff output at: %s", aspect_arguments.tool_output)
+        for finding in json.loads(exception.stdout):
+            findings.append(
+                python_tool_common.Finding(
+                    path=finding["filename"],
+                    message=finding["message"],
+                    severity=python_tool_common.Severity.WARN,
+                    tool="ruff_check",
+                    rule_id=finding["code"],
+                    line=finding["location"]["row"],
+                    column=finding["location"]["column"],
+                )
+            )
 
-    if ruff_output.return_code:
-        raise python_tool_common.DeprecatedLinterFindingAsError(
-            path=aspect_arguments.tool_output,
-            tool=aspect_arguments.tool.name,
-        )
+    aspect_arguments.tool_output.write_text(str(findings))
+    if findings:
+        logging.info("Created ruff check output at: %s", aspect_arguments.tool_output)
+        raise python_tool_common.LinterFindingAsError(findings=findings)
 
 
 def main():
