@@ -70,15 +70,6 @@ class PythonPathNotFoundError(Exception):
         super().__init__(f'The path "{self.path}" was not found. Therefore {self.tool} cannot properly run.')
 
 
-class DeprecatedLinterFindingAsError(Exception):
-    """Raised when a linter finds a finding treats it as an error."""
-
-    def __init__(self, path: t.Union[str, pathlib.Path], tool: str):
-        self.path = path
-        self.tool = tool
-        super().__init__(f'At least one {self.tool} finding was treated as error. See its output at "{self.path}"')
-
-
 class LinterFindingAsError(SystemExit):
     """Raised when a linter finds a finding treats it as an error."""
 
