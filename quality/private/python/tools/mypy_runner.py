@@ -2,6 +2,7 @@
 
 import logging
 import os
+import pathlib
 
 from quality.private.python.tools import python_tool_common
 
@@ -19,6 +20,7 @@ def check_with_mypy(aspect_arguments: python_tool_common.AspectArguments) -> Non
     """
 
     pylint_env = os.environ
+    findings = python_tool_common.Findings()
     for target_import in aspect_arguments.target_imports | aspect_arguments.target_dependencies:
         if "PYTHONPATH" not in pylint_env:
             pylint_env["PYTHONPATH"] = str(target_import)
@@ -31,26 +33,44 @@ def check_with_mypy(aspect_arguments: python_tool_common.AspectArguments) -> Non
                 f"{aspect_arguments.tool}",
                 "--config-file",
                 f"{aspect_arguments.tool_config}",
+                "--show-column-numbers",
                 *map(str, aspect_arguments.target_files),
             ],
         )
     except python_tool_common.LinterSubprocessError as exception:
         if exception.return_code != MYPY_BAD_CHECK_ERROR_CODE:
-            raise
+            raise exception
+
         mypy_output = python_tool_common.SubprocessInfo(
             exception.stdout,
             exception.stderr,
             exception.return_code,
         )
 
-    aspect_arguments.tool_output.write_text(mypy_output.stdout)
-    logging.info("Created mypy output at: %s", aspect_arguments.tool_output)
+    # The last line of mypy's stdout does not contain any finding. Instead, it
+    #  contains information about how many files are ok and how many are have issues.
+    issues = mypy_output.stdout.splitlines()[:-1]
 
-    if mypy_output.return_code:
-        raise python_tool_common.DeprecatedLinterFindingAsError(
-            path=aspect_arguments.tool_output,
-            tool=aspect_arguments.tool.name,
+    for issue in issues:
+        path, line, column, _, message_and_rule = issue.split(":", 4)
+        message, rule_id = message_and_rule.rsplit(" ", 1)
+        findings.append(
+            python_tool_common.Finding(
+                path=pathlib.Path(path),
+                message=message.strip(),
+                severity=python_tool_common.Severity.WARN,
+                tool="mypy",
+                rule_id=rule_id.strip("[]"),
+                line=int(line),
+                column=int(column),
+            )
         )
+
+    aspect_arguments.tool_output.write_text(str(findings))
+
+    if findings:
+        logging.info("Created mypy output at: %s", aspect_arguments.tool_output)
+        raise python_tool_common.LinterFindingAsError(findings=findings)
 
 
 def main():
