@@ -153,7 +153,7 @@ def _is_relative_to(path: pathlib.Path, root: pathlib.Path):
 
 
 @dataclasses.dataclass
-class AspectArguments:
+class AspectArguments:  # pylint: disable=too-many-instance-attributes
     """Class that provides a clean and verified interface between aspect and runner."""
 
     target_imports: t.Set[pathlib.Path]
@@ -163,6 +163,7 @@ class AspectArguments:
     tool_config: pathlib.Path
     tool_output: pathlib.Path
     tool_root: str
+    refactor: bool
 
     def __post_init__(self):
         def resolve_paths(paths: t.List[str], prepend_path: str = "") -> t.Set[pathlib.Path]:
@@ -253,6 +254,12 @@ def parse_args() -> AspectArguments:
         "--tool-root",
         type=str,
         required=True,
+        help="",
+    )
+    parser.add_argument(
+        "--refactor",
+        type=bool,
+        default=False,
         help="",
     )
 

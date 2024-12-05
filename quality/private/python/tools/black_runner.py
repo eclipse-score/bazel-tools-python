@@ -20,15 +20,17 @@ def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> No
 
     findings = python_tool_common.Findings()
 
-    black_output = python_tool_common.execute_subprocess(
-        [
-            f"{aspect_arguments.tool}",
-            "--diff",
-            "--config",
-            f"{aspect_arguments.tool_config}",
-            *map(str, aspect_arguments.target_files),
-        ],
-    )
+    subprocess_list = [
+        f"{aspect_arguments.tool}",
+        "--diff",
+        "--config",
+        f"{aspect_arguments.tool_config}",
+        *map(str, aspect_arguments.target_files),
+    ]
+    if aspect_arguments.refactor:
+        subprocess_list.remove("--diff")
+
+    black_output = python_tool_common.execute_subprocess(subprocess_list)
 
     for line in black_output.stderr.splitlines():
         if line.startswith(WOULD_REFORMAT_MSG):

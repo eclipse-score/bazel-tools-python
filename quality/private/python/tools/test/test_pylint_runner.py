@@ -23,6 +23,7 @@ class TestPylintRunner(unittest.TestCase):
             tool_root="",
             target_files=set(),
             tool_output=pathlib.Path(self.tmp_file_path),
+            refactor=False,
         )
 
     def tearDown(self) -> None:

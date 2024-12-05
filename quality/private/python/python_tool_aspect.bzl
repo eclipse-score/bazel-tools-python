@@ -5,11 +5,19 @@ load("@swf_bazel_rules_quality//quality/private/python:python_helper.bzl", "is_v
 load("@swf_bazel_rules_quality//quality/private/python:python_providers.bzl", "PythonCollectInfo", "PythonToolInfo")
 
 def _python_tool_config_impl(ctx):
-    return [PythonToolInfo(config = ctx.file.config)]
+    return [PythonToolInfo(config = ctx.file.config, additional_features = ctx.attr.additional_features)]
 
 python_tool_config = rule(
     implementation = _python_tool_config_impl,
     attrs = {
+        "additional_features": attr.string_list(
+            default = [],
+            doc = """List of additional bazel features to be enabled when invoking python aspect.
+The available options are:
+    refactor: tools that are able to refactor will automatically fix findings. In order to allow
+                   refactoring, this option enforces all actions to run in a non-sandboxed mode.
+""",
+        ),
         "config": attr.label(
             allow_single_file = True,
         ),
@@ -25,6 +33,7 @@ def _python_tool_aspect_implementation(target, ctx):
         return [OutputGroupInfo(python_tool_output = depset([]))]
 
     config = ctx.attr._config[PythonToolInfo].config
+    additional_features = ctx.attr._config[PythonToolInfo].additional_features
 
     sources_to_run = []
     for source in ctx.rule.attr.srcs:
@@ -53,6 +62,11 @@ def _python_tool_aspect_implementation(target, ctx):
         args.add("--tool-output", output_file.path, format = "%s")
         args.add("--tool-root", ctx.expand_location(ctx.workspace_name), format = "%s")
 
+        file_refactor = "false"
+        if "refactor" in ctx.features or "refactor" in additional_features:
+            args.add("--refactor", True, format = "%s")
+            file_refactor = "true"
+
         ctx.actions.run(
             inputs = depset([config], transitive = [target[DefaultInfo].default_runfiles.files]),
             outputs = [output_file],
@@ -60,6 +74,7 @@ def _python_tool_aspect_implementation(target, ctx):
             executable = ctx.executable._runner,
             arguments = [args],
             progress_message = "Running {tool} on: {target_name}".format(tool = ctx.executable._runner.basename, target_name = target.label.name),
+            execution_requirements = {"no-sandbox": file_refactor},
         )
 
     return [OutputGroupInfo(python_tool_output = depset(output))]

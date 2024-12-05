@@ -22,6 +22,7 @@ class TestBlackRunner(unittest.TestCase):
             tool_root="",
             target_files=set(),
             tool_output=pathlib.Path(self.tmp_file_path),
+            refactor=False,
         )
 
     def tearDown(self) -> None:
@@ -39,9 +40,26 @@ class TestBlackRunner(unittest.TestCase):
     )
     def test_black_output_with_no_issues(self, _) -> None:
         """Tests check_with_black function with the results of a file with no issues."""
-
         black_runner.check_with_black(self.aspect_args)
+
         self.assertFalse(self.aspect_args.tool_output.read_text(encoding="utf-8"))
+
+    @patch(
+        "quality.private.python.tools.python_tool_common.execute_subprocess",
+        side_effect=[
+            python_tool_common.SubprocessInfo(
+                stdout="",
+                stderr="",
+                return_code=0,
+            )
+        ],
+    )
+    def test_black_output_with_refactor(self, execute_subprocess) -> None:
+        """Tests check_with_black function with the refactor being true."""
+        self.aspect_args.refactor = True
+        black_runner.check_with_black(self.aspect_args)
+
+        self.assertFalse("--diff" in execute_subprocess.call_args)
 
     @patch(
         "quality.private.python.tools.python_tool_common.execute_subprocess",
