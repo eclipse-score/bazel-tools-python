@@ -21,19 +21,20 @@ def check_with_isort(aspect_arguments: python_tool_common.AspectArguments) -> No
     findings = python_tool_common.Findings()
 
     try:
-        isort_output = python_tool_common.execute_subprocess(
-            [
-                f"{aspect_arguments.tool}",
-                "--check-only",
-                "--diff",
-                "--sp",
-                f"{aspect_arguments.tool_config}",
-                "--src",
-                f"{pathlib.Path.cwd()}",
-                "--",
-                *map(str, aspect_arguments.target_files),
-            ],
-        )
+        subprocess_list = [
+            f"{aspect_arguments.tool}",
+            "--sp",
+            f"{aspect_arguments.tool_config}",
+            "--src",
+            f"{pathlib.Path.cwd()}",
+            "--",
+            *map(str, aspect_arguments.target_files),
+        ]
+
+        if not aspect_arguments.refactor:
+            subprocess_list[1:1] = ["--check-only", "--diff"]
+
+        isort_output = python_tool_common.execute_subprocess(subprocess_list)
     except python_tool_common.LinterSubprocessError as exception:
         if exception.return_code != ISORT_BAD_CHECK_ERROR_CODE:
             raise exception
