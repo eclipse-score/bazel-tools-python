@@ -59,7 +59,7 @@ class TestBlackRunner(unittest.TestCase):
         self.aspect_args.refactor = True
         black_runner.check_with_black(self.aspect_args)
 
-        self.assertFalse("--diff" in execute_subprocess.call_args)
+        self.assertFalse("--diff" in execute_subprocess.call_args.args[0])
 
     @patch(
         "quality.private.python.tools.python_tool_common.execute_subprocess",
