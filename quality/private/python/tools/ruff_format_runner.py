@@ -27,16 +27,17 @@ def format_with_ruff(aspect_arguments: python_tool_common.AspectArguments) -> No
     findings = python_tool_common.Findings()
 
     try:
-        ruff_output = python_tool_common.execute_subprocess(
-            [
-                f"{aspect_arguments.tool}",
-                "format",
-                "--config",
-                f"{aspect_arguments.tool_config}",
-                "--diff",
-                *map(str, aspect_arguments.target_files),
-            ],
-        )
+        subprocess_list = [
+            f"{aspect_arguments.tool}",
+            "format",
+            "--config",
+            f"{aspect_arguments.tool_config}",
+            *map(str, aspect_arguments.target_files),
+        ]
+        if not aspect_arguments.refactor:
+            subprocess_list[4:4] = ["--diff"]
+
+        ruff_output = python_tool_common.execute_subprocess(subprocess_list)
     except python_tool_common.LinterSubprocessError as exception:
         if exception.return_code != RUFF_BAD_CHECK_ERROR_CODE:
             raise exception

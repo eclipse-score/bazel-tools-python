@@ -26,18 +26,21 @@ def check_with_ruff(aspect_arguments: python_tool_common.AspectArguments) -> Non
     findings = python_tool_common.Findings()
 
     try:
-        python_tool_common.execute_subprocess(
-            [
-                f"{aspect_arguments.tool}",
-                "check",
-                "--config",
-                f"{aspect_arguments.tool_config}",
-                "--unsafe-fixes",
-                "--output-format",
-                "json",
-                *map(str, aspect_arguments.target_files),
-            ],
-        )
+        subprocess_list = [
+            f"{aspect_arguments.tool}",
+            "check",
+            "--config",
+            f"{aspect_arguments.tool_config}",
+            "--fix",
+            "--output-format",
+            "json",
+            *map(str, aspect_arguments.target_files),
+        ]
+        if not aspect_arguments.refactor:
+            subprocess_list.remove("--fix")
+            subprocess_list[4:4] = ["--unsafe-fixes"]
+
+        python_tool_common.execute_subprocess(subprocess_list)
     except python_tool_common.LinterSubprocessError as exception:
         if exception.return_code != RUFF_BAD_CHECK_ERROR_CODE:
             raise exception
