@@ -8,9 +8,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from ruff import __main__ as ruff_main  # type: ignore[import-untyped]
-
 if __name__ == "__main__":
+    from ruff import __main__ as ruff_main  # type: ignore[import-untyped]
+
     ruff_main_path = Path(ruff_main.__file__).resolve(strict=True)
     ruff_external = ruff_main_path.parent.parent.parent
     ruff_bin = ruff_external / "bin/ruff"

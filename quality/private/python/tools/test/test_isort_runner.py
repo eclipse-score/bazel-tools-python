@@ -154,8 +154,18 @@ class TestIsortRunner(unittest.TestCase):
             " ",
         ]
         with patch.object(sys, "argv", ["isort"] + mocked_args):
-            isort_runner.main()
-            self.assertFalse(self.aspect_args.tool_output.read_text(encoding="utf-8"))
+            with patch(
+                "quality.private.python.tools.python_tool_common.execute_subprocess",
+                side_effect=[
+                    python_tool_common.SubprocessInfo(
+                        stdout="",
+                        stderr="",
+                        return_code=0,
+                    )
+                ],
+            ):
+                isort_runner.main()
+                self.assertFalse(self.aspect_args.tool_output.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":  # pragma: no cover

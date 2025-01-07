@@ -8,12 +8,23 @@ from quality.private.python.tools import python_tool_common
 WOULD_REFORMAT_MSG = "would reformat"
 
 
+def _removeprefix(text: str, prefix: str) -> str:
+    """Remove a certain prefix from a a given text.
+
+    This function is supposed to add backwards compartibility with python 3.8 as
+    python versions equal or greater than 3.9 already offer this as a built in.
+    """
+    if text.startswith(prefix):
+        return text[len(prefix) :].strip()
+    return text
+
+
 def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> None:
     """Run a black subprocess, check its output and write its findings to a file.
 
     :param aspect_arguments:
         The arguments received from the python_tool_aspect and already processed by
-         python_tool_common module.
+        python_tool_common module.
     :raises LinterFindingAsError:
         If black finds at least one file to be formatted.
     """
@@ -34,7 +45,7 @@ def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> No
 
     for line in black_output.stderr.splitlines():
         if line.startswith(WOULD_REFORMAT_MSG):
-            file = line.removeprefix(WOULD_REFORMAT_MSG)
+            file = _removeprefix(line, WOULD_REFORMAT_MSG)
             findings += [
                 python_tool_common.Finding(
                     path=pathlib.Path(file),
