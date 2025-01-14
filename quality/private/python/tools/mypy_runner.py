@@ -1,7 +1,6 @@
 """A runner that interfaces python tool aspect and runs mypy on a list of files."""
 
 import logging
-import os
 import pathlib
 
 from quality.private.python.tools import python_tool_common
@@ -19,13 +18,7 @@ def check_with_mypy(aspect_arguments: python_tool_common.AspectArguments) -> Non
         If mypy finds a file to be formatted.
     """
 
-    pylint_env = os.environ
     findings = python_tool_common.Findings()
-    for target_import in aspect_arguments.target_imports | aspect_arguments.target_dependencies:
-        if "PYTHONPATH" not in pylint_env:
-            pylint_env["PYTHONPATH"] = str(target_import)
-        else:
-            pylint_env["PYTHONPATH"] += ":" + str(target_import)
 
     try:
         mypy_output = python_tool_common.execute_subprocess(

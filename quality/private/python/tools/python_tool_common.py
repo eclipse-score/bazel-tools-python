@@ -110,7 +110,6 @@ class SubprocessInfo:
 def execute_subprocess(
     commands: t.List[str],
     cwd: pathlib.Path = pathlib.Path.cwd(),
-    env: t.Optional[t.Mapping[str, str]] = None,
 ) -> SubprocessInfo:
     """Function that calls a subprocess and expects a zero return code."""
     try:
@@ -121,7 +120,6 @@ def execute_subprocess(
             check=True,
             text=True,
             shell=False,
-            env=env or os.environ,
             cwd=cwd,
             universal_newlines=True,
         )
@@ -202,6 +200,13 @@ class AspectArguments:  # pylint: disable=too-many-instance-attributes
         self.target_imports = resolve_paths(self.target_imports, "external")
         self.target_dependencies = resolve_paths(self.target_dependencies)
         self.target_files = resolve_paths(self.target_files)
+
+        env = os.environ
+        for target_import in self.target_imports | self.target_dependencies:
+            if "PYTHONPATH" not in env:
+                env["PYTHONPATH"] = str(target_import)
+            else:
+                env["PYTHONPATH"] += os.pathsep + str(target_import)
 
 
 def parse_args() -> AspectArguments:

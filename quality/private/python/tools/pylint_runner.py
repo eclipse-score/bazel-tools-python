@@ -1,7 +1,6 @@
 """A runner that interfaces python tool aspect and runs pylint on a list of files."""
 
 import logging
-import os
 import pathlib
 
 from quality.private.python.tools import python_tool_common
@@ -23,13 +22,6 @@ def is_pylint_critical_error(exception: python_tool_common.LinterSubprocessError
 
 def check_with_pylint(aspect_arguments: python_tool_common.AspectArguments) -> None:
     """Run a pylint subprocess, check its output and write its findings to a file."""
-
-    pylint_env = os.environ
-    for target_import in aspect_arguments.target_imports | aspect_arguments.target_dependencies:
-        if "PYTHONPATH" not in pylint_env:
-            pylint_env["PYTHONPATH"] = str(target_import)
-        else:
-            pylint_env["PYTHONPATH"] += ":" + str(target_import)
 
     findings = python_tool_common.Findings()
 
@@ -53,7 +45,6 @@ def check_with_pylint(aspect_arguments: python_tool_common.AspectArguments) -> N
                 "--",
                 *map(str, aspect_arguments.target_files),
             ],
-            env=pylint_env,
         )
     except python_tool_common.LinterSubprocessError as exception:
         if is_pylint_critical_error(exception):
