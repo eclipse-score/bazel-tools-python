@@ -1,53 +1,32 @@
-load("@swf_bazel_rules_quality//third_party/pip:requirements.bzl", "requirement")
-load("@swf_bazel_rules_quality_python//:defs.bzl", "py_binary", "py_console_script_binary")
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@swf_bazel_rules_quality_pip_hub//:loaders.bzl", "pkg")
 
-py_console_script_binary(
+py_binary(
     name = "pylint_entry_point",
-    pkg = requirement("pylint"),
-    script = "pylint",
+    srcs = ["pylint_entry_point.py"],
     visibility = ["//visibility:public"],
-    deps = [
-        requirement("astroid"),
-        requirement("dill"),
-        requirement("isort"),
-        requirement("mccabe"),
-        requirement("platformdirs"),
-        requirement("tomlkit"),
-    ],
+    deps = [pkg("pylint")],
 )
 
-py_console_script_binary(
+py_binary(
     name = "black_entry_point",
-    pkg = requirement("black"),
-    script = "black",
+    srcs = ["black_entry_point.py"],
     visibility = ["//visibility:public"],
+    deps = [pkg("black")],
 )
 
-py_console_script_binary(
+py_binary(
     name = "isort_entry_point",
-    pkg = requirement("isort"),
-    script = "isort",
+    srcs = ["isort_entry_point.py"],
     visibility = ["//visibility:public"],
+    deps = [pkg("isort")],
 )
 
-py_console_script_binary(
+py_binary(
     name = "mypy_entry_point",
-    pkg = requirement("mypy"),
-    script = "mypy",
+    srcs = ["mypy_entry_point.py"],
     visibility = ["//visibility:public"],
-    deps = [
-        requirement("types-jsonschema"),
-        requirement("types-PyYAML"),
-        requirement("types-requests"),
-        requirement("types-typed-ast"),
-        requirement("types-six"),
-        requirement("types-setuptools"),
-        requirement("types-python-dateutil"),
-        requirement("types-certifi"),
-        requirement("types-chardet"),
-        requirement("types-urllib3"),
-        requirement("types-html5lib"),
-    ],
+    deps = [pkg("mypy")],
 )
 
 py_binary(
@@ -55,5 +34,5 @@ py_binary(
     srcs = ["ruff_entry_point.py"],
     main = "ruff_entry_point.py",
     visibility = ["//visibility:public"],
-    deps = [requirement("ruff")],
+    deps = [pkg("ruff")],
 )
