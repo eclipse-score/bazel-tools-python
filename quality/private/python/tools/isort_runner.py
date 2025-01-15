@@ -1,7 +1,7 @@
 """A runner that interfaces python tool aspect and runs isort on a list of files."""
 
-import logging
 import pathlib
+import typing as t
 
 from quality.private.python.tools import python_tool_common
 
@@ -9,43 +9,29 @@ ISORT_BAD_CHECK_ERROR_CODE = 1
 ISORT_ERROR_MSG = "ERROR: "
 
 
-def check_with_isort(aspect_arguments: python_tool_common.AspectArguments) -> None:
-    """Run a isort subprocess, check its output and write its findings to a file.
+def get_isort_command(aspect_arguments: python_tool_common.AspectArguments) -> t.List[str]:
+    """Returns the command to run an isort subprocess."""
+    subprocess_list = [
+        f"{aspect_arguments.tool}",
+        "--sp",
+        f"{aspect_arguments.tool_config}",
+        "--src",
+        f"{pathlib.Path.cwd()}",
+        "--",
+        *map(str, aspect_arguments.target_files),
+    ]
 
-    :param aspect_arguments:
-        The arguments received from the python_tool_aspect and already processed by
-         python_tool_common module.
-    :raises LinterFindingAsError:
-        If isort finds a file to be formatted.
-    """
+    if not aspect_arguments.refactor:
+        subprocess_list[1:1] = ["--check-only", "--diff"]
+
+    return subprocess_list
+
+
+def isort_output_parser(tool_output: python_tool_common.SubprocessInfo) -> python_tool_common.Findings:
+    """Parses `tool_output` to get the findings returned from the tool execution."""
     findings = python_tool_common.Findings()
 
-    try:
-        subprocess_list = [
-            f"{aspect_arguments.tool}",
-            "--sp",
-            f"{aspect_arguments.tool_config}",
-            "--src",
-            f"{pathlib.Path.cwd()}",
-            "--",
-            *map(str, aspect_arguments.target_files),
-        ]
-
-        if not aspect_arguments.refactor:
-            subprocess_list[1:1] = ["--check-only", "--diff"]
-
-        isort_output = python_tool_common.execute_subprocess(subprocess_list)
-    except python_tool_common.LinterSubprocessError as exception:
-        if exception.return_code != ISORT_BAD_CHECK_ERROR_CODE:
-            raise exception
-
-        isort_output = python_tool_common.SubprocessInfo(
-            exception.stdout,
-            exception.stderr,
-            exception.return_code,
-        )
-
-    for line in isort_output.stderr.splitlines():
+    for line in tool_output.stderr.splitlines():
         file = line.lstrip(ISORT_ERROR_MSG).split(" ")[0]
         findings.append(
             python_tool_common.Finding(
@@ -57,20 +43,28 @@ def check_with_isort(aspect_arguments: python_tool_common.AspectArguments) -> No
             )
         )
 
-    aspect_arguments.tool_output.write_text(str(findings))
-    if findings:
-        logging.info("Created isort output at: %s", aspect_arguments.tool_output)
-        raise python_tool_common.LinterFindingAsError(findings=findings)
+    return findings
+
+
+def isort_exception_handler(exception: python_tool_common.LinterSubprocessError) -> python_tool_common.SubprocessInfo:
+    """Handles the cases that isort has a non-zero return code."""
+    if exception.return_code != ISORT_BAD_CHECK_ERROR_CODE:
+        raise exception
+
+    return python_tool_common.SubprocessInfo(
+        exception.stdout,
+        exception.stderr,
+        exception.return_code,
+    )
 
 
 def main():
-    """Interfaces python tool aspect and use isort to check a given set of files."""
-
-    args = python_tool_common.parse_args()
-
-    logging.basicConfig(level=logging.DEBUG)
-
-    check_with_isort(aspect_arguments=args)
+    """Main entry point."""
+    python_tool_common.execute_runner(
+        get_command=get_isort_command,
+        output_parser=isort_output_parser,
+        exception_handler=isort_exception_handler,
+    )
 
 
 if __name__ == "__main__":  # pragma: no cover

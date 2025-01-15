@@ -1,7 +1,7 @@
 """A runner that interfaces python tool aspect and runs black on a list of files."""
 
-import logging
 import pathlib
+import typing as t
 
 from quality.private.python.tools import python_tool_common
 
@@ -19,17 +19,8 @@ def _removeprefix(text: str, prefix: str) -> str:
     return text
 
 
-def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> None:
-    """Run a black subprocess, check its output and write its findings to a file.
-
-    :param aspect_arguments:
-        The arguments received from the python_tool_aspect and already processed by
-        python_tool_common module.
-    :raises LinterFindingAsError:
-        If black finds at least one file to be formatted.
-    """
-
-    findings = python_tool_common.Findings()
+def get_black_command(aspect_arguments: python_tool_common.AspectArguments) -> t.List[str]:
+    """Returns the command to run a black subprocess."""
 
     subprocess_list = [
         f"{aspect_arguments.tool}",
@@ -41,9 +32,15 @@ def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> No
     if aspect_arguments.refactor:
         subprocess_list.remove("--diff")
 
-    black_output = python_tool_common.execute_subprocess(subprocess_list)
+    return subprocess_list
 
-    for line in black_output.stderr.splitlines():
+
+def black_output_parser(tool_output: python_tool_common.SubprocessInfo) -> python_tool_common.Findings:
+    """Parses `tool_output` to get the findings returned from the tool execution."""
+
+    findings = python_tool_common.Findings()
+
+    for line in tool_output.stderr.splitlines():
         if line.startswith(WOULD_REFORMAT_MSG):
             file = _removeprefix(line, WOULD_REFORMAT_MSG)
             findings += [
@@ -56,20 +53,15 @@ def check_with_black(aspect_arguments: python_tool_common.AspectArguments) -> No
                 )
             ]
 
-    aspect_arguments.tool_output.write_text(str(findings))
-    if findings:
-        logging.info("Created black output at: %s", aspect_arguments.tool_output)
-        raise python_tool_common.LinterFindingAsError(findings=findings)
+    return findings
 
 
 def main():
-    """Interfaces python tool aspect and use black to check a given set of files."""
-
-    args = python_tool_common.parse_args()
-
-    logging.basicConfig(level=logging.DEBUG)
-
-    check_with_black(aspect_arguments=args)
+    """Main entry point."""
+    python_tool_common.execute_runner(
+        get_command=get_black_command,
+        output_parser=black_output_parser,
+    )
 
 
 if __name__ == "__main__":  # pragma: no cover

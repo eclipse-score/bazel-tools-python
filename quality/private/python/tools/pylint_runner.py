@@ -1,7 +1,7 @@
 """A runner that interfaces python tool aspect and runs pylint on a list of files."""
 
-import logging
 import pathlib
+import typing as t
 
 from quality.private.python.tools import python_tool_common
 
@@ -20,43 +20,35 @@ def is_pylint_critical_error(exception: python_tool_common.LinterSubprocessError
     return (return_code % 2) == 1 or return_code == 32 or exception.stderr != ""
 
 
-def check_with_pylint(aspect_arguments: python_tool_common.AspectArguments) -> None:
-    """Run a pylint subprocess, check its output and write its findings to a file."""
+def get_pylint_command(aspect_arguments: python_tool_common.AspectArguments) -> t.List[str]:
+    """Returns the command to run a pylint subprocess."""
+
+    return [
+        # Binary executable path.
+        f"{aspect_arguments.tool}",
+        # Configuration flag and path.
+        "--rcfile",
+        f"{aspect_arguments.tool_config}",
+        # Text content template.
+        "--msg-template",
+        "{path}:{line}:{column}:{msg}:{symbol}",
+        # Exclude pylint persistent output as this would be both action input and output.
+        "--persistent",
+        "no",
+        "--score",
+        "no",
+        # Files to lint
+        "--",
+        *map(str, aspect_arguments.target_files),
+    ]
+
+
+def pylint_output_parser(tool_output: python_tool_common.SubprocessInfo) -> python_tool_common.Findings:
+    """Parses `tool_output` to get the findings returned from the tool execution."""
 
     findings = python_tool_common.Findings()
 
-    try:
-        pylint_output = python_tool_common.execute_subprocess(
-            [
-                # Binary executable path.
-                f"{aspect_arguments.tool}",
-                # Configuration flag and path.
-                "--rcfile",
-                f"{aspect_arguments.tool_config}",
-                # Text content template.
-                "--msg-template",
-                "{path}:{line}:{column}:{msg}:{symbol}",
-                # Exclude pylint persistent output as this would be both action input and output.
-                "--persistent",
-                "no",
-                "--score",
-                "no",
-                # Files to lint
-                "--",
-                *map(str, aspect_arguments.target_files),
-            ],
-        )
-    except python_tool_common.LinterSubprocessError as exception:
-        if is_pylint_critical_error(exception):
-            raise exception
-
-        pylint_output = python_tool_common.SubprocessInfo(
-            exception.stdout,
-            exception.stderr,
-            exception.return_code,
-        )
-
-    for output_line in pylint_output.stdout.splitlines():
+    for output_line in tool_output.stdout.splitlines():
         if output_line.startswith(PYLINT_MODULE_START_MSG):
             continue
 
@@ -74,20 +66,28 @@ def check_with_pylint(aspect_arguments: python_tool_common.AspectArguments) -> N
             )
         )
 
-    aspect_arguments.tool_output.write_text(str(findings))
-    if findings:
-        logging.info("Created pylint output at: %s", aspect_arguments.tool_output)
-        raise python_tool_common.LinterFindingAsError(findings=findings)
+    return findings
+
+
+def pylint_exception_handler(exception: python_tool_common.LinterSubprocessError) -> python_tool_common.SubprocessInfo:
+    """Handles the cases that pylint has a non-zero return code."""
+    if is_pylint_critical_error(exception):
+        raise exception
+
+    return python_tool_common.SubprocessInfo(
+        exception.stdout,
+        exception.stderr,
+        exception.return_code,
+    )
 
 
 def main():
-    """Interfaces python tool aspect and use pylint to check a given set of files."""
-
-    args = python_tool_common.parse_args()
-
-    logging.basicConfig(level=logging.DEBUG)
-
-    check_with_pylint(aspect_arguments=args)
+    """Main entry point."""
+    python_tool_common.execute_runner(
+        get_command=get_pylint_command,
+        output_parser=pylint_output_parser,
+        exception_handler=pylint_exception_handler,
+    )
 
 
 if __name__ == "__main__":  # pragma: no cover

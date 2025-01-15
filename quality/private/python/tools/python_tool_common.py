@@ -5,6 +5,7 @@ import dataclasses
 import enum
 import itertools
 import json
+import logging
 import os
 import pathlib
 import subprocess
@@ -269,3 +270,37 @@ def parse_args() -> AspectArguments:
     )
 
     return AspectArguments(**vars(parser.parse_args()))
+
+
+def execute_runner(
+    get_command: t.Callable, output_parser: t.Callable, exception_handler: t.Optional[t.Callable] = None
+) -> None:
+    """Handles running the tool subprocess, checking its return and outputing the findings.
+
+    :param get_command:
+        Function that returns the command to run the tool.
+    :param output_parser:
+        Function that receives SubprocessInfo, process it and returns Findings.
+    :param exception_handler:
+        Function that handles the cases that the tool has a non-zero return code.
+    """
+    args = parse_args()
+
+    tool_name = args.tool_output.name[: args.tool_output.name.find("_output")]
+    subprocess_list = get_command(args)
+
+    try:
+        tool_output = execute_subprocess(subprocess_list)
+
+    except LinterSubprocessError as exception:
+        if exception_handler:
+            tool_output = exception_handler(exception)
+        else:
+            raise exception
+
+    findings = output_parser(tool_output)
+
+    args.tool_output.write_text(str(findings), encoding="utf-8")
+    if findings:
+        logging.info("Created %s output at: %s", tool_name, args.tool_output)
+        raise LinterFindingAsError(findings=findings)

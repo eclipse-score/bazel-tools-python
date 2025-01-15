@@ -1,48 +1,29 @@
 """A runner that interfaces python tool aspect and runs mypy on a list of files."""
 
-import logging
 import pathlib
+import typing as t
 
 from quality.private.python.tools import python_tool_common
 
 MYPY_BAD_CHECK_ERROR_CODE = 1
 
 
-def check_with_mypy(aspect_arguments: python_tool_common.AspectArguments) -> None:
-    """Run a mypy subprocess, check its output and write its findings to a file.
+def get_mypy_command(aspect_arguments: python_tool_common.AspectArguments) -> t.List[str]:
+    """Returns the command to run mypy on a subprocess."""
+    return [
+        f"{aspect_arguments.tool}",
+        "--config-file",
+        f"{aspect_arguments.tool_config}",
+        "--show-column-numbers",
+        *map(str, aspect_arguments.target_files),
+    ]
 
-    :param aspect_arguments:
-        The arguments received from the python_tool_aspect and already processed by
-         python_tool_common module.
-    :raises LinterFindingAsError:
-        If mypy finds a file to be formatted.
-    """
+
+def mypy_output_parser(tool_output: python_tool_common.SubprocessInfo) -> python_tool_common.Findings:
+    """Parses `tool_output` to get the findings returned from the tool execution."""
 
     findings = python_tool_common.Findings()
-
-    try:
-        mypy_output = python_tool_common.execute_subprocess(
-            [
-                f"{aspect_arguments.tool}",
-                "--config-file",
-                f"{aspect_arguments.tool_config}",
-                "--show-column-numbers",
-                *map(str, aspect_arguments.target_files),
-            ],
-        )
-    except python_tool_common.LinterSubprocessError as exception:
-        if exception.return_code != MYPY_BAD_CHECK_ERROR_CODE:
-            raise exception
-
-        mypy_output = python_tool_common.SubprocessInfo(
-            exception.stdout,
-            exception.stderr,
-            exception.return_code,
-        )
-
-    # The last line of mypy's stdout does not contain any finding. Instead, it
-    #  contains information about how many files are ok and how many are have issues.
-    issues = mypy_output.stdout.splitlines()[:-1]
+    issues = tool_output.stdout.splitlines()[:-1]
 
     for issue in issues:
         path, line, column, _, message_and_rule = issue.split(":", 4)
@@ -59,22 +40,29 @@ def check_with_mypy(aspect_arguments: python_tool_common.AspectArguments) -> Non
             )
         )
 
-    aspect_arguments.tool_output.write_text(str(findings))
+    return findings
 
-    if findings:
-        logging.info("Created mypy output at: %s", aspect_arguments.tool_output)
-        raise python_tool_common.LinterFindingAsError(findings=findings)
+
+def mypy_exception_handler(exception: python_tool_common.LinterSubprocessError) -> python_tool_common.SubprocessInfo:
+    """Handles the cases that mypy has a non-zero return code."""
+    if exception.return_code != MYPY_BAD_CHECK_ERROR_CODE:
+        raise exception
+
+    return python_tool_common.SubprocessInfo(
+        exception.stdout,
+        exception.stderr,
+        exception.return_code,
+    )
 
 
 def main():
-    """Interfaces python tool aspect and use mypy to check a given set of files."""
+    """Main entry point."""
+    python_tool_common.execute_runner(
+        get_command=get_mypy_command,
+        output_parser=mypy_output_parser,
+        exception_handler=mypy_exception_handler,
+    )
 
-    args = python_tool_common.parse_args()
 
-    logging.basicConfig(level=logging.DEBUG)
-
-    check_with_mypy(aspect_arguments=args)
-
-
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

@@ -28,96 +28,49 @@ class TestBlackRunner(unittest.TestCase):
     def tearDown(self) -> None:
         pathlib.Path(self.tmp_file_path).unlink()
 
-    @patch(
-        "quality.private.python.tools.python_tool_common.execute_subprocess",
-        side_effect=[
+    def test_black_output_parser_with_no_issues(self) -> None:
+        """Tests black_output_parser function with the results of a file with no issues."""
+        expected_findings = python_tool_common.Findings()
+        findings = black_runner.black_output_parser(
             python_tool_common.SubprocessInfo(
                 stdout="",
                 stderr="",
                 return_code=0,
             )
-        ],
-    )
-    def test_black_output_with_no_issues(self, _) -> None:
-        """Tests check_with_black function with the results of a file with no issues."""
-        black_runner.check_with_black(self.aspect_args)
+        )
 
-        self.assertFalse(self.aspect_args.tool_output.read_text(encoding="utf-8"))
+        self.assertEqual(expected_findings, findings)
 
-    @patch(
-        "quality.private.python.tools.python_tool_common.execute_subprocess",
-        side_effect=[
-            python_tool_common.SubprocessInfo(
-                stdout="",
-                stderr="",
-                return_code=0,
-            )
-        ],
-    )
-    def test_black_output_with_refactor(self, execute_subprocess) -> None:
-        """Tests check_with_black function with the refactor being true."""
+    def test_get_black_command_with_refactor(self) -> None:
+        """Tests get_black_command function with the refactor being true."""
         self.aspect_args.refactor = True
-        black_runner.check_with_black(self.aspect_args)
+        command = black_runner.get_black_command(self.aspect_args)
 
-        self.assertFalse("--diff" in execute_subprocess.call_args.args[0])
+        self.assertFalse("--diff" in command)
 
-    @patch(
-        "quality.private.python.tools.python_tool_common.execute_subprocess",
-        side_effect=[
+    def test_black_output_parser_with_issues(self) -> None:
+        """Tests black_output_parser function with results of files with issues."""
+        expected_findings = python_tool_common.Findings(
+            [
+                python_tool_common.Finding(
+                    path=pathlib.Path("file.py"),
+                    message="Should be reformatted.",
+                    severity=python_tool_common.Severity.WARN,
+                    tool="black",
+                    rule_id="formatting",
+                )
+            ]
+        )
+
+        findings = black_runner.black_output_parser(
             python_tool_common.SubprocessInfo(
                 stdout="",
                 stderr="--- file.py\nwould reformat file.py",
                 return_code=0,
             )
-        ],
-    )
-    def test_black_output_with_issues(self, _) -> None:
-        """Tests check_with_black function with results of files with issues."""
-        expected_error_message = (
-            "\nThe following findings were found:\n file.py: Should be reformatted. [black:formatting]\n"
         )
-        exepected_output_message = " file.py: Should be reformatted. [black:formatting]"
-        expected_output_log_message = f"INFO:root:Created black output at: {self.tmp_file_path}"
-        findings = python_tool_common.Findings()
-        findings += [
-            python_tool_common.Finding(
-                path=pathlib.Path("file.py"),
-                message="Should be reformatted.",
-                severity=python_tool_common.Severity.WARN,
-                tool="black",
-                rule_id="formatting",
-            )
-        ]
-        with self.assertRaises(python_tool_common.LinterFindingAsError) as exception:
-            with self.assertLogs() as logs:
-                black_runner.check_with_black(self.aspect_args)
 
-            output_log_message = logs.output[0]
-            output_file_content = self.aspect_args.tool_output.read_text(encoding="utf-8")
-
-            self.assertEqual(expected_error_message, str(exception.exception))
-            self.assertEqual(exepected_output_message, output_file_content)
-            self.assertEqual(expected_output_log_message, output_log_message)
-
-    @patch(
-        "quality.private.python.tools.python_tool_common.execute_subprocess",
-        side_effect=[
-            python_tool_common.LinterSubprocessError(
-                commands=[],
-                stdout="",
-                stderr="1 file would be reformatted.",
-                return_code=1,
-            )
-        ],
-    )
-    def test_check_with_black_unexpected_exception(self, _) -> None:
-        """Test check_with_black function when an unexpected exception occurs."""
-        with self.assertRaises(python_tool_common.LinterSubprocessError) as exception:
-            with self.assertLogs() as logs:
-                black_runner.check_with_black(self.aspect_args)
-        self.assertEqual(exception.exception.return_code, 1)
-        self.assertFalse(self.aspect_args.tool_output.read_text(encoding="utf-8"))
-        self.assertFalse(logs.output)
+        self.assertEqual(expected_findings, findings)
 
     @patch(
         "quality.private.python.tools.python_tool_common.execute_subprocess",
