@@ -26,7 +26,20 @@ py_binary(
     name = "mypy_entry_point",
     srcs = ["mypy_entry_point.py"],
     visibility = ["//visibility:public"],
-    deps = [pkg("mypy")],
+    deps = [
+        pkg("mypy"),
+        pkg("types-jsonschema"),
+        pkg("types-PyYAML"),
+        pkg("types-requests"),
+        pkg("types-typed-ast"),
+        pkg("types-six"),
+        pkg("types-setuptools"),
+        pkg("types-python-dateutil"),
+        pkg("types-certifi"),
+        pkg("types-chardet"),
+        pkg("types-urllib3"),
+        pkg("types-html5lib"),
+    ],
 )
 
 py_binary(

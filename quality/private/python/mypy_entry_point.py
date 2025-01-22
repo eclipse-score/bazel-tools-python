@@ -9,3 +9,5 @@ This executes mypy by importing, thus executing, its main entry point.
 
 if __name__ == "__main__":
     from mypy import __main__  # type: ignore[import-untyped]
+
+    __main__.console_entry()
