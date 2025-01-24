@@ -5,7 +5,10 @@ line-length = 120
 profile = "black"
 
 [tool.pylint]
-max-line-length=120
+max-line-length = 120
+# Important to ignore no-value-for-parameter warnings for tests 
+# with decorators that change the function signature
+signature-mutators = ["unittest.mock.patch"]
 
 [tool.pylint.messages_control]
 disable = [
