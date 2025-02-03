@@ -20,6 +20,9 @@ disable = [
 disallow_untyped_defs = false
 explicit_package_bases = true
 incremental = false
+# Avoid having to add type hints to internal variables that are initialized,
+# but mypy can't be certain about the type of the variable.
+disable_error_code = ["var-annotated"]
 
 [tool.ruff]
 # Same as Black.
