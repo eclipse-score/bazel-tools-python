@@ -1,4 +1,12 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@swf_bazel_rules_quality_pip_hub//:loaders.bzl", "pkg")
+
+py_binary(
+    name = "pytest_runner",
+    srcs = ["pytest_runner.py"],
+    visibility = ["//visibility:public"],
+    deps = [pkg("pytest")],
+)
 
 py_library(
     name = "python_tool_common",

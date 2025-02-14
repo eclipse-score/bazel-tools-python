@@ -1,4 +1,4 @@
-load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
 load("@swf_bazel_rules_quality_pip_hub//:loaders.bzl", "pkg")
 
 py_binary(
@@ -6,6 +6,31 @@ py_binary(
     srcs = ["pylint_entry_point.py"],
     visibility = ["//visibility:public"],
     deps = [pkg("pylint")],
+)
+
+py_library(
+    name = "default_py_test_deps",
+    visibility = ["//visibility:public"],
+    deps = [
+        pkg("hypothesis"),
+        pkg("pytest"),
+        pkg("pytest-asyncio"),
+        pkg("pytest-benchmark"),
+        pkg("pytest-bdd"),
+        pkg("pytest-cov"),
+        pkg("pytest-instafail"),
+        pkg("pytest-mock"),
+        pkg("pytest-rerunfailures"),
+        pkg("pytest-rich"),
+        pkg("pytest-timeout"),
+        pkg("pytest-vcr"),
+    ],
+)
+
+label_flag(
+    name = "py_test_deps",
+    build_setting_default = "@swf_bazel_rules_quality//quality/private/python:default_py_test_deps",
+    visibility = ["//visibility:public"],
 )
 
 py_binary(

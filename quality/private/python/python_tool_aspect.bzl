@@ -5,7 +5,10 @@ load("@swf_bazel_rules_quality//quality/private/python:python_helper.bzl", "is_v
 load("@swf_bazel_rules_quality//quality/private/python:python_providers.bzl", "PythonCollectInfo", "PythonToolInfo")
 
 def _python_tool_config_impl(ctx):
-    return [PythonToolInfo(config = ctx.file.config, additional_features = ctx.attr.additional_features)]
+    return [
+        DefaultInfo(files = depset([ctx.file.config])),
+        PythonToolInfo(config = ctx.file.config, additional_features = ctx.attr.additional_features),
+    ]
 
 python_tool_config = rule(
     implementation = _python_tool_config_impl,

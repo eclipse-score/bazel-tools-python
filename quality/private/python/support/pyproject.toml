@@ -36,3 +36,54 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 # Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
+
+[tool.pytest.ini_options]
+log_level = "NOTSET"
+
+addopts = [
+    "-vv",
+    "--strict-markers",
+    "--strict-config",
+    "--instafail",
+    "--color=yes",
+    "--benchmark-columns=Min,Max,Median"
+]
+
+testpaths = ["tests"]
+
+required_plugins = [
+    "hypothesis",
+    "pytest-asyncio",
+    "pytest-benchmark",
+    "pytest-bdd",
+    "pytest-instafail",
+    "pytest-mock",
+    "pytest-rerunfailures",
+    "pytest-rich",
+    "pytest-timeout",
+    "pytest-vcr"
+]
+
+markers = [
+    "windows: Tests which only can run on Windows.",
+    "linux: Tests which only can run on Linux.",
+    "ci: Tests which should only run on CI.",
+    "no_ci: Tests which should not run on CI."
+]
+
+# Makes any test maked with @pytest.mark.xfail fail the test suite if it
+# unexpectedly passes.
+xfail_strict = true
+
+# Treat all warnings as errors.
+filterwarnings = "error"
+
+[tool.coverage.run]
+# Activate branch coverage analysis.
+branch = true
+
+[tool.coverage.report]
+# Fail if coverage is less than 100%.
+fail_under = 98
+# List the lines that were not covered by tests.
+show_missing = true
