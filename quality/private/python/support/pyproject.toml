@@ -44,7 +44,6 @@ addopts = [
     "-vv",
     "--strict-markers",
     "--strict-config",
-    "--instafail",
     "--color=yes",
     "--benchmark-columns=Min,Max,Median"
 ]
@@ -52,14 +51,10 @@ addopts = [
 testpaths = ["tests"]
 
 required_plugins = [
-    "hypothesis",
-    "pytest-asyncio",
     "pytest-benchmark",
     "pytest-bdd",
-    "pytest-instafail",
     "pytest-mock",
     "pytest-rerunfailures",
-    "pytest-rich",
     "pytest-timeout",
     "pytest-vcr"
 ]
