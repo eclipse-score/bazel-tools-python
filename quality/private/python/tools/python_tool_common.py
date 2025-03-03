@@ -5,7 +5,6 @@ import dataclasses
 import enum
 import itertools
 import json
-import logging
 import os
 import pathlib
 import subprocess
@@ -78,9 +77,12 @@ class PythonPathNotFoundError(Exception):
 class LinterFindingAsError(SystemExit):
     """Raised when a linter finds a finding treats it as an error."""
 
-    def __init__(self, findings: Findings):
+    def __init__(self, tool_name: str, findings: Findings, outputs: t.List[pathlib.Path]):
         self.findings = findings
-        super().__init__(f"\nThe following findings were found:\n{self.findings}\n")
+        message = f'\nTool "{tool_name}" found findings and stored them at:\n- '
+        message += "\n- ".join([str(output) for output in outputs])
+        message += f"\nThe following findings were found:\n{self.findings}\n"
+        super().__init__(message)
 
 
 class LinterSubprocessError(Exception):
@@ -316,4 +318,11 @@ def execute_runner(
     findings.to_text_file(args.tool_output_text)
     findings.to_json_file(args.tool_output_json)
     if findings:
-        logging.info("Created %s output at %s and %s", tool_name, args.tool_output_text, args.tool_output_json)
+        raise LinterFindingAsError(
+            tool_name=tool_name,
+            findings=findings,
+            outputs=[
+                args.tool_output_text,
+                args.tool_output_json,
+            ],
+        )
