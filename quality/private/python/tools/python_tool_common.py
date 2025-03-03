@@ -273,7 +273,9 @@ def parse_args() -> AspectArguments:
 
 
 def execute_runner(
-    get_command: t.Callable, output_parser: t.Callable, exception_handler: t.Optional[t.Callable] = None
+    get_command: t.Callable[[AspectArguments], t.List[str]],
+    output_parser: t.Callable[[SubprocessInfo], Findings],
+    exception_handler: t.Optional[t.Callable[[LinterSubprocessError], SubprocessInfo]] = None,
 ) -> None:
     """Handles running the tool subprocess, checking its return and outputing the findings.
 
