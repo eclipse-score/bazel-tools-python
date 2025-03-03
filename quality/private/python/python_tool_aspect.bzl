@@ -30,7 +30,7 @@ The available options are:
 def _python_tool_aspect_implementation(target, ctx):
     """Python tool aspect implementation."""
 
-    output = []
+    outputs = []
 
     if not PyInfo in target or not is_valid_label(target.label):
         return [OutputGroupInfo(python_tool_output = depset([]))]
@@ -46,41 +46,47 @@ def _python_tool_aspect_implementation(target, ctx):
             else:
                 sources_to_run.append(source.label.name)
 
-    if sources_to_run:
-        output_file = ctx.actions.declare_file(ctx.executable._runner.basename + "_output_" + target.label.name + ".txt")
-        output.append(output_file)
+    if not sources_to_run:
+        return [OutputGroupInfo(python_tool_output = depset([]))]
 
-        deps = getattr(target[PythonCollectInfo], "deps")
-        imports = getattr(target[PythonCollectInfo], "imports")
+    basename = target.label.name + "_" + ctx.executable._runner.basename + ".py_findings"
+    findings_text_file = ctx.actions.declare_file(basename + ".txt")
+    outputs.append(findings_text_file)
+    findings_json_file = ctx.actions.declare_file(basename + ".json")
+    outputs.append(findings_json_file)
 
-        args = ctx.actions.args()
-        args.use_param_file("@%s", use_always = True)
-        args.set_param_file_format("multiline")
+    deps = getattr(target[PythonCollectInfo], "deps")
+    imports = getattr(target[PythonCollectInfo], "imports")
 
-        args.add_all("--target-imports", imports, format_each = "%s")
-        args.add_all("--target-dependencies", deps, format_each = "%s")
-        args.add_all("--target-files", sources_to_run, format_each = "%s")
-        args.add("--tool", ctx.executable._tool.path, format = "%s")
-        args.add("--tool-config", config.path, format = "%s")
-        args.add("--tool-output", output_file.path, format = "%s")
-        args.add("--tool-root", ctx.expand_location(ctx.workspace_name), format = "%s")
+    args = ctx.actions.args()
+    args.use_param_file("@%s", use_always = True)
+    args.set_param_file_format("multiline")
 
-        file_refactor = "false"
-        if "refactor" in ctx.features or "refactor" in additional_features:
-            args.add("--refactor", True, format = "%s")
-            file_refactor = "true"
+    args.add_all("--target-imports", imports, format_each = "%s")
+    args.add_all("--target-dependencies", deps, format_each = "%s")
+    args.add_all("--target-files", sources_to_run, format_each = "%s")
+    args.add("--tool", ctx.executable._tool.path, format = "%s")
+    args.add("--tool-config", config.path, format = "%s")
+    args.add("--tool-output-text", findings_text_file.path, format = "%s")
+    args.add("--tool-output-json", findings_json_file.path, format = "%s")
+    args.add("--tool-root", ctx.expand_location(ctx.workspace_name), format = "%s")
 
-        ctx.actions.run(
-            inputs = depset([config], transitive = [target[DefaultInfo].default_runfiles.files]),
-            outputs = [output_file],
-            tools = [ctx.executable._runner, ctx.executable._tool, target[DefaultInfo].files_to_run],
-            executable = ctx.executable._runner,
-            arguments = [args],
-            progress_message = "Running {tool} on: {target_name}".format(tool = ctx.executable._runner.basename, target_name = target.label.name),
-            execution_requirements = {"no-sandbox": file_refactor},
-        )
+    file_refactor = "false"
+    if "refactor" in ctx.features or "refactor" in additional_features:
+        args.add("--refactor", True, format = "%s")
+        file_refactor = "true"
 
-    return [OutputGroupInfo(python_tool_output = depset(output))]
+    ctx.actions.run(
+        inputs = depset([config], transitive = [target[DefaultInfo].default_runfiles.files]),
+        outputs = outputs,
+        tools = [ctx.executable._runner, ctx.executable._tool, target[DefaultInfo].files_to_run],
+        executable = ctx.executable._runner,
+        arguments = [args],
+        progress_message = "Running {tool} on: {target_name}".format(tool = ctx.executable._runner.basename, target_name = target.label.name),
+        execution_requirements = {"no-sandbox": file_refactor},
+    )
+
+    return [OutputGroupInfo(python_tool_output = depset(outputs))]
 
 def _python_tool_aspect(tool, runner, config):
     """Python tool aspect.

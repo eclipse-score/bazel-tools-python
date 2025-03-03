@@ -54,8 +54,12 @@ class Finding:
 class Findings(t.List[Finding]):
     """Defines a list of findings."""
 
+    def to_text_file(self, file: pathlib.Path) -> None:
+        """Dumps a list of findings to a .txt file."""
+        file.write_text(str(self), encoding="utf-8")
+
     def to_json_file(self, file: pathlib.Path) -> None:
-        """Dumps a list of findings to a JSON file."""
+        """Dumps a list of findings to a .json file."""
         file.write_text(json.dumps(self, cls=FindingsJSONEncoder, indent=2), encoding="utf-8")
 
     def __str__(self) -> str:
@@ -160,7 +164,8 @@ class AspectArguments:  # pylint: disable=too-many-instance-attributes
     target_files: t.Set[pathlib.Path]
     tool: pathlib.Path
     tool_config: pathlib.Path
-    tool_output: pathlib.Path
+    tool_output_text: pathlib.Path
+    tool_output_json: pathlib.Path
     tool_root: str
     refactor: bool
 
@@ -251,7 +256,13 @@ def parse_args() -> AspectArguments:
         help="",
     )
     parser.add_argument(
-        "--tool-output",
+        "--tool-output-text",
+        type=pathlib.Path,
+        required=True,
+        help="",
+    )
+    parser.add_argument(
+        "--tool-output-json",
         type=pathlib.Path,
         required=True,
         help="",
@@ -288,7 +299,7 @@ def execute_runner(
     """
     args = parse_args()
 
-    tool_name = args.tool_output.name[: args.tool_output.name.find("_output")]
+    tool_name = args.tool.name.split("_entry_point")[0]
     subprocess_list = get_command(args)
 
     try:
@@ -302,7 +313,7 @@ def execute_runner(
 
     findings = output_parser(tool_output)
 
-    args.tool_output.write_text(str(findings), encoding="utf-8")
+    findings.to_text_file(args.tool_output_text)
+    findings.to_json_file(args.tool_output_json)
     if findings:
-        logging.info("Created %s output at: %s", tool_name, args.tool_output)
-        raise LinterFindingAsError(findings=findings)
+        logging.info("Created %s output at %s and %s", tool_name, args.tool_output_text, args.tool_output_json)
