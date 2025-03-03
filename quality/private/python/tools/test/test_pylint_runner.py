@@ -1,5 +1,6 @@
 """Tests for the pylint runner."""
 
+import json
 import pathlib
 import sys
 import tempfile
@@ -13,7 +14,8 @@ class TestPylintRunner(unittest.TestCase):
     """Test class for pylint runner."""
 
     def setUp(self) -> None:
-        _, self.tmp_file_path = tempfile.mkstemp()
+        self.tmp_text_file_path = pathlib.Path(tempfile.mkstemp()[1])
+        self.tmp_json_file_path = pathlib.Path(tempfile.mkstemp()[1])
         self.aspect_args = python_tool_common.AspectArguments(
             target_imports=set(),
             target_dependencies=set(),
@@ -21,12 +23,14 @@ class TestPylintRunner(unittest.TestCase):
             tool_config=pathlib.Path(""),
             tool_root="",
             target_files=set(),
-            tool_output=pathlib.Path(self.tmp_file_path),
+            tool_output_text=self.tmp_text_file_path,
+            tool_output_json=self.tmp_json_file_path,
             refactor=False,
         )
 
     def tearDown(self) -> None:
-        pathlib.Path(self.tmp_file_path).unlink()
+        self.tmp_text_file_path.unlink()
+        self.tmp_json_file_path.unlink()
 
     def test_pylint_output_with_no_issues(self) -> None:
         """Tests pylint_output_parser function with the results of a file with no issues."""
@@ -82,7 +86,8 @@ class TestPylintRunner(unittest.TestCase):
         expected_return_code = 32
 
         self.assertEqual(exception.exception.return_code, expected_return_code)
-        self.assertFalse(self.aspect_args.tool_output.read_text(encoding="utf-8"))
+        self.assertFalse(self.aspect_args.tool_output_text.read_text(encoding="utf-8"))
+        self.assertFalse(self.aspect_args.tool_output_json.read_text(encoding="utf-8"))
         self.assertFalse(logs.output)
 
     def test_pylint_exception_handler(self) -> None:
@@ -121,14 +126,17 @@ class TestPylintRunner(unittest.TestCase):
             " ",
             "--tool-config",
             " ",
-            "--tool-output",
-            self.tmp_file_path,
+            "--tool-output-text",
+            str(self.tmp_text_file_path),
+            "--tool-output-json",
+            str(self.tmp_json_file_path),
             "--tool-root",
             " ",
         ]
         with patch.object(sys, "argv", ["pylint"] + mocked_args):
             pylint_runner.main()
-            self.assertFalse(self.aspect_args.tool_output.read_text(encoding="utf-8"))
+            self.assertFalse(self.aspect_args.tool_output_text.read_text(encoding="utf-8"))
+            self.assertFalse(json.loads(self.aspect_args.tool_output_json.read_text(encoding="utf-8")))
 
 
 if __name__ == "__main__":  # pragma: no cover
