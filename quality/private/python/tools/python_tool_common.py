@@ -39,8 +39,8 @@ class Finding:
     severity: Severity
     tool: str
     rule_id: str
-    line: t.Optional[int] = None
-    column: t.Optional[int] = None
+    line: int = 1
+    column: int = 1
 
     def __str__(self):
         output = f"{self.path}"
