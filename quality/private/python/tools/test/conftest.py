@@ -1,7 +1,6 @@
 """pytest fixtures for the config-generator test"""
 
 import pathlib
-import tempfile
 
 import pytest
 
@@ -9,7 +8,7 @@ from quality.private.python.tools import python_tool_common
 
 
 @pytest.fixture(name="subprocess_output", scope="module")
-def fixture_subprocessinfo(request) -> python_tool_common.SubprocessInfo:
+def fixture_subprocess_info(request) -> python_tool_common.SubprocessInfo:
     """Fixture to return a python tool common SubprocessInfo class without errors."""
     stdout, stderr, return_code = request.param
 
@@ -21,7 +20,7 @@ def fixture_subprocessinfo(request) -> python_tool_common.SubprocessInfo:
 
 
 @pytest.fixture(name="linter_subprocess_error", scope="module")
-def fixture_linter_subprocesserror(request) -> python_tool_common.LinterSubprocessError:
+def fixture_linter_subprocess_error(request) -> python_tool_common.LinterSubprocessError:
     """Fixture to return a generic python tool common LinterSubprocessError."""
     commands, stdout, stderr, return_code = request.param
 
@@ -34,20 +33,19 @@ def fixture_linter_subprocesserror(request) -> python_tool_common.LinterSubproce
 
 
 @pytest.fixture(name="aspect_args")
-def fixture_aspect_argument() -> python_tool_common.AspectArguments:
+def fixture_aspect_argument(tmp_path: pathlib.Path) -> python_tool_common.AspectArguments:
     """Fixture to return a python tool common AspectArguments class."""
-    tmp_text_file_path = pathlib.Path(tempfile.mkstemp()[1])
-    tmp_json_file_path = pathlib.Path(tempfile.mkstemp()[1])
-    target_file = pathlib.Path(tempfile.mkstemp()[1])
+    test = tmp_path / "test.py"
+    test.write_text("")
 
     return python_tool_common.AspectArguments(
         target_imports=set(),
         target_dependencies=set(),
-        target_files=set([target_file]),
+        target_files=set([test]),
         tool=pathlib.Path("tool.exec"),
         tool_config=pathlib.Path("tool.config"),
-        tool_output_text=tmp_text_file_path,
-        tool_output_json=tmp_json_file_path,
+        tool_output_text=pathlib.Path("output.text"),
+        tool_output_json=pathlib.Path("output.json"),
         tool_root="",
         refactor=False,
     )

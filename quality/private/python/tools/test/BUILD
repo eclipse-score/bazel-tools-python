@@ -52,7 +52,13 @@ py_library(
     srcs = ["conftest.py"],
     visibility = ["//visibility:public"],
     deps = [
-        "@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common",
+        "//quality/private/python/tools:python_tool_common",
         pkg("pytest"),
     ],
+)
+
+py_pytest(
+    name = "test_python_tool_common",
+    srcs = ["test_python_tool_common.py"],
+    deps = [":conftest"],
 )
