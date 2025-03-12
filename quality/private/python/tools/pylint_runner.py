@@ -52,11 +52,11 @@ def pylint_output_parser(tool_output: python_tool_common.SubprocessInfo) -> pyth
         if output_line.startswith(PYLINT_MODULE_START_MSG):
             continue
 
-        path, line, column, message, rule_id = output_line.split(":")
+        *path_parts, line, column, message, rule_id = output_line.split(":")
 
         findings.append(
             python_tool_common.Finding(
-                path=pathlib.Path(path),
+                path=pathlib.Path(":".join(path_parts)),
                 message=message,
                 severity=python_tool_common.Severity.WARN,
                 tool="pylint",
