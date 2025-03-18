@@ -1,6 +1,7 @@
 """A runner that interfaces python tool aspect and runs ruff on a list of files."""
 
 import json
+import pathlib
 import typing as t
 
 from quality.private.python.tools import python_tool_common
@@ -35,7 +36,7 @@ def ruff_check_output_parser(tool_output: python_tool_common.SubprocessInfo) -> 
     for finding in json.loads(tool_output.stdout):
         findings.append(
             python_tool_common.Finding(
-                path=finding["filename"],
+                path=pathlib.Path(finding["filename"]),
                 message=finding["message"],
                 severity=python_tool_common.Severity.WARN,
                 tool="ruff_check",
