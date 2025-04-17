@@ -4,7 +4,21 @@ load("@swf_bazel_rules_quality//quality/private/python:python_collect_aspect.bzl
 load("@swf_bazel_rules_quality//quality/private/python:python_helper.bzl", "is_valid_label")
 load("@swf_bazel_rules_quality//quality/private/python:python_providers.bzl", "PythonCollectInfo", "PythonToolInfo")
 
+_AVAILABLE_FEATURES = [
+    # Tools that are able to refactor will automatically fix findings using this feature.
+    "refactor",
+]
+
 def _python_tool_config_impl(ctx):
+    for feature_name in ctx.attr.features:
+        if feature_name not in _AVAILABLE_FEATURES:
+            fail('The feature "' + feature_name + '" does not exist. Available features are: "' + ", ".join(_AVAILABLE_FEATURES))
+
+    for feature_name in ctx.features:
+        if feature_name not in _AVAILABLE_FEATURES:
+            # buildifier: disable=print
+            print('Python tools integration does not offer the feature "' + feature_name + '", but it will still be considered in the build.')
+
     return [
         DefaultInfo(files = depset([ctx.file.config])),
         PythonToolInfo(config = ctx.file.config, additional_features = ctx.attr.additional_features),
