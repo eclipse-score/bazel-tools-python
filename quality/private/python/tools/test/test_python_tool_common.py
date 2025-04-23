@@ -251,7 +251,7 @@ def test_resolve_relative_paths_valid(mocker: MockerFixture, tmp_path: Path) -> 
     Also tests the enviroment for target_imports.
     """
     mocker.patch.object(Path, "glob", return_value={Path("quality/private/python/ruff_entry_point")})
-    mocker.patch.dict(os.environ, {"PYTHONPATH": "some/path"}, clear=False)
+    mocker.patch.dict(os.environ, {}, clear=True)
     target_imports = {Path("path/to/imports")}
     target_files = {Path("quality/private/python/ruff_entry_point")}
     tool = Path("path/to/tool_entry_point")
