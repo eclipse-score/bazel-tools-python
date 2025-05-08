@@ -98,6 +98,7 @@ def _python_tool_aspect_implementation(target, ctx):
         arguments = [args],
         progress_message = "Running {tool} on: {target_name}".format(tool = ctx.executable._runner.basename, target_name = target.label.name),
         execution_requirements = {"no-sandbox": file_refactor},
+        mnemonic = "PyAnalysis",
     )
 
     return [OutputGroupInfo(python_tool_output = depset(outputs))]
