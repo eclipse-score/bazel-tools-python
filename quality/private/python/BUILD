@@ -18,7 +18,6 @@ py_library(
         pkg("pytest-mock"),
         pkg("pytest-rerunfailures"),
         pkg("pytest-timeout"),
-        pkg("pytest-vcr"),
     ],
 )
 

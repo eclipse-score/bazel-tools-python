@@ -58,8 +58,7 @@ required_plugins = [
     "pytest-bdd",
     "pytest-mock",
     "pytest-rerunfailures",
-    "pytest-timeout",
-    "pytest-vcr"
+    "pytest-timeout"
 ]
 
 markers = [
