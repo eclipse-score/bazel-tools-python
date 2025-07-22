@@ -71,3 +71,9 @@ py_binary(
         "@swf_bazel_rules_quality//quality/private/python/tools:python_tool_common",
     ],
 )
+
+filegroup(
+    name = "pip_audit_runner_template",
+    srcs = ["pip_audit_runner.sh.template"],
+    visibility = ["//visibility:public"],
+)

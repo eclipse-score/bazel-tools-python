@@ -1,0 +1,2 @@
+#!/bin/bash
+exec {PIP_AUDIT_TOOL} {ARGUMENTS}

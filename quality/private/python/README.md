@@ -118,7 +118,7 @@ For more information read [Pylint documentation](https://pylint.readthedocs.io/e
 
 #### Ruff-check
 
-Ruff  is an extremely fast Python linter designed as a drop-in replacement for Flake8 (plus dozens of plugins), isort, pydocstyle, pyupgrade, autoflake, and more. Ruff check is the primary entrypoint to the Ruff linter.
+Ruff is an extremely fast Python linter designed as a drop-in replacement for Flake8 (plus dozens of plugins), isort, pydocstyle, pyupgrade, autoflake, and more. Ruff check is the primary entrypoint to the Ruff linter.
 
 For more information read [Ruff check documentation](https://docs.astral.sh/ruff/linter/).
 
@@ -140,6 +140,44 @@ bazel build --config=isort --keep_going --features=refactor -- //...
 bazel build --config=ruff_check --keep_going --features=refactor -- //...
 bazel build --config=ruff_format --keep_going --features=refactor -- //...
 ```
+
+## Pip-audit rule
+
+A custom Bazel rule which generates a script that runs `pip-audit` on the specified requirements file.
+
+This helps validate vulnerabilities that a certain set of Python requirements might have, which is a good practice and also required for qualification purposes.
+
+For more information, read the [pip-audit documentation](https://pypi.org/project/pip-audit/).
+
+### Configuration
+
+The rule supports the following attributes:
+
+- `requirement`: Mandatory. The requirement file to check for vulnerabilities, e.g., a `requirements.txt` file. Locked files with hashes are expected. Non-locked files without hashes will work only with the `no_deps` option set.
+- `no_deps`: Optional. Defaults to `False`. If set, pip-audit will not check for dependencies of the packages in the requirements file. Required for non-locked requirement files.
+- `index_url`: Optional. If set, overrides the index URL used by the pip-audit command. If not provided, gets the index from the requirement file or uses the default PyPI index.
+
+### How to use
+
+To use the pip-audit rule, load it from the quality module and create a target with your requirements file:
+
+```starlark
+# BUILD
+load("@swf_bazel_rules_quality//quality:defs.bzl", "pip_audit_rule")
+
+pip_audit_rule(
+  name = "pip_audit",
+  requirement = "requirements.txt",
+)
+```
+
+To run the respective target:
+
+```bash
+bazel run //:pip_audit
+```
+
+In case of multiple requirements files, it is necessary to create multiple rules and execute each one of them.
 
 ## Custom Pytest
 
