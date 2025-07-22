@@ -68,3 +68,11 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [pkg("ruff")],
 )
+
+py_binary(
+    name = "pip_audit_entry_point",
+    srcs = ["pip_audit_entry_point.py"],
+    main = "pip_audit_entry_point.py",
+    visibility = ["//visibility:public"],
+    deps = [pkg("pip-audit")],
+)
