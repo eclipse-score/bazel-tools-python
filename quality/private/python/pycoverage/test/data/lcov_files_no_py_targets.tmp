@@ -1,0 +1,2 @@
+bazel-out/k8-fastbuild/testlogs/common/signal_processing/debounce/debounce/coverage.dat
+bazel-out/k8-fastbuild/testlogs/common/geometry/algorithm/test/algorithm_unit_tests/baseline_coverage.dat

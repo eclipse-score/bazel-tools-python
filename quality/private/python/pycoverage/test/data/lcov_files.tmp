@@ -1,0 +1,3 @@
+bazel-out/k8-fastbuild/testlogs/common/utility/test/test_string_conversion/coverage.dat
+bazel-out/k8-fastbuild/testlogs/common/communication/common_crc_v1_validate/coverage.dat
+bazel-out/k8-fastbuild/testlogs/common/communication/test/unit_test/coverage.dat
