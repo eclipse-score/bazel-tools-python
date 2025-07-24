@@ -76,3 +76,10 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [pkg("pip-audit")],
 )
+
+py_binary(
+    name = "pycoverage_entry_point",
+    srcs = ["pycoverage_entry_point.py"],
+    visibility = ["//visibility:public"],
+    deps = [pkg("coverage")],
+)
