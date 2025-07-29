@@ -16,7 +16,7 @@ from termcolor import colored
 def main() -> None:
     """Main entry point."""
     logging.basicConfig(level=logging.INFO)
-    logging.info(colored("Running MERGER on all executed tests", "magenta"))
+    logging.info(colored("Running output-generator on all executed tests", "magenta"))
 
     args = parse_args()
     logging.debug(msg=f"Arguments:\n{pformat(args)}")

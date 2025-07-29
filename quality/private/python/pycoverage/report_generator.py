@@ -14,7 +14,7 @@ from termcolor import colored
 def main() -> None:
     """Main entry point."""
     logging.basicConfig(level=logging.INFO)
-    logging.info(colored("Running REPORTER on all executed tests", "magenta"))
+    logging.info(colored("Running report-generator on all executed tests", "magenta"))
 
     args = parse_args()
     logging.debug(msg=f"Arguments:\n{pformat(args)}")

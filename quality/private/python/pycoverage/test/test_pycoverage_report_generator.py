@@ -1,12 +1,12 @@
 # Copyright (C) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG). All rights reserved.
 
-"""Tests for the pycoverage reporter module."""
+"""Tests for the pycoverage report_generator module."""
 
 from pathlib import Path
 
 import pytest
 
-from quality.private.python.pycoverage import report_generator as reporter
+from quality.private.python.pycoverage import report_generator
 
 
 @pytest.mark.parametrize(
@@ -26,7 +26,7 @@ from quality.private.python.pycoverage import report_generator as reporter
     ],
 )
 def test_pycoverage_reporter_main(mocker, caplog, reports_file, st_size, output_file):
-    """Tests pycoverage reporter main function."""
+    """Tests pycoverage report_generator main function."""
     mocker.patch("pathlib.Path.touch", lambda self: None)
     # mock st_size
     mock_stat = mocker.Mock()
@@ -37,7 +37,7 @@ def test_pycoverage_reporter_main(mocker, caplog, reports_file, st_size, output_
     mocker.patch(
         "sys.argv",
         new=[
-            "reporter",
+            "report_generator",
             "--output_file",
             str(output_file),
             "--reports_file",
@@ -45,7 +45,7 @@ def test_pycoverage_reporter_main(mocker, caplog, reports_file, st_size, output_
         ],
     )
 
-    reporter.main()
+    report_generator.main()
 
     if reports_file == "lcov_files_no_py_targets.tmp":
         assert "No python coverage reports found." in caplog.text

@@ -1,12 +1,12 @@
 # Copyright (C) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG). All rights reserved.
 
-"""Tests for the pycoverage merger module."""
+"""Tests for the pycoverage output_generator module."""
 
 from pathlib import Path
 
 import pytest
 
-from quality.private.python.pycoverage import output_generator as merger
+from quality.private.python.pycoverage import output_generator
 
 
 @pytest.mark.parametrize(
@@ -21,14 +21,14 @@ from quality.private.python.pycoverage import output_generator as merger
     ],
 )
 def test_pycoverage_merger_main(mocker, caplog, coverage_files, output_file):
-    """Tests pycoverage merger main function."""
+    """Tests pycoverage output_generator main function."""
     mocker.patch("pathlib.Path.rglob", return_value=coverage_files)
     mocker.patch("pathlib.Path.touch", lambda self: None)
     mocker.patch("shutil.copy2", lambda *args, **kwargs: None)
     mocker.patch(
         "sys.argv",
         new=[
-            "merger",
+            "output_generator",
             "--output_file",
             str(output_file),
         ],
@@ -40,7 +40,7 @@ def test_pycoverage_merger_main(mocker, caplog, coverage_files, output_file):
         assert "Found more than one .coverage file." in caplog.text
         return
 
-    merger.main()
+    output_generator.main()
 
     if not coverage_files:
         return
