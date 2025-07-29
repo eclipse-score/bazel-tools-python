@@ -12,6 +12,14 @@ from coverage import Coverage
 from termcolor import colored
 
 
+def coverage_file(line: str) -> bool:
+    """Check if the given string is a path to a coverage.dat file."""
+
+    file = Path(line)
+
+    return file.parts[-1] == "coverage.dat" and file.stat().st_size != 0
+
+
 def main() -> int:
     """Main entry point."""
     logging.basicConfig(level=logging.INFO)
@@ -26,12 +34,7 @@ def main() -> int:
     # Read the reports file
     coverage_files = []
     with open(args.reports_file, encoding="utf-8") as reports_file:
-        for line in reports_file:
-            coverage_file = Path(line.strip())
-            if coverage_file.parts[-1] != "coverage.dat" or coverage_file.stat().st_size == 0:
-                logging.debug(f"Ignoring {coverage_file}.")
-                continue
-            coverage_files.append(str(coverage_file))
+        coverage_files = list(filter(coverage_file, map(lambda line: line.strip(), reports_file.readlines())))
 
     if not coverage_files:
         logging.error("No python coverage reports found.")
