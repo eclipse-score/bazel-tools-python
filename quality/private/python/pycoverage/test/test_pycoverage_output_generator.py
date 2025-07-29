@@ -35,8 +35,7 @@ def test_pycoverage_merger_main(mocker, caplog, coverage_files, output_file):
     )
 
     if len(coverage_files) > 1:
-        with pytest.raises(SystemExit):
-            merger.main()
+        assert output_generator.main() == 1
         assert "Found more than one .coverage file." in caplog.text
         return
 

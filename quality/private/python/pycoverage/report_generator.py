@@ -4,6 +4,7 @@
 
 import argparse
 import logging
+import sys
 from pathlib import Path
 from pprint import pformat
 
@@ -11,7 +12,7 @@ from coverage import Coverage
 from termcolor import colored
 
 
-def main() -> None:
+def main() -> int:
     """Main entry point."""
     logging.basicConfig(level=logging.INFO)
     logging.info(colored("Running report-generator on all executed tests", "magenta"))
@@ -34,13 +35,15 @@ def main() -> None:
 
     if not coverage_files:
         logging.error("No python coverage reports found.")
-        return
+        return 0
 
     # Combine the coverage data
     logging.debug(f"Combining coverage data from {len(coverage_files)} files.")
     cov = Coverage(data_file=args.output_file)
     cov.combine(data_paths=coverage_files, keep=True)
     cov.save()
+
+    return 0
 
 
 def parse_args() -> argparse.Namespace:
@@ -55,4 +58,4 @@ def parse_args() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

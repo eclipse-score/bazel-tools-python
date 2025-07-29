@@ -13,7 +13,7 @@ from pprint import pformat
 from termcolor import colored
 
 
-def main() -> None:
+def main() -> int:
     """Main entry point."""
     logging.basicConfig(level=logging.INFO)
     logging.info(colored("Running output-generator on all executed tests", "magenta"))
@@ -28,16 +28,18 @@ def main() -> None:
     coverage_file = list(Path(os.environ["RUNFILES_DIR"]).rglob("*.coverage"))
 
     if not coverage_file:
-        return
+        return 0
 
     if len(coverage_file) > 1:
         logging.error("Found more than one .coverage file.")
-        sys.exit(1)
+        return 1
 
     # Overwrite the empty output file with the found .coverage file.
     shutil.copy2(coverage_file[0], args.output_file)
 
     logging.info(f"Copied {coverage_file[0]} to {args.output_file}.")
+
+    return 0
 
 
 def parse_args() -> argparse.Namespace:
@@ -55,4 +57,4 @@ def parse_args() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
