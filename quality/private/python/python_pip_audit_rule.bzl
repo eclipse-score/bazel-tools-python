@@ -66,7 +66,7 @@ pip_audit_rule = rule(
             ),
         ),
         "_pip_audit_tool": attr.label(
-            default = "@swf_bazel_rules_quality//quality/private/python:pip_audit_entry_point",
+            default = "@bazel_tools_python//quality/private/python:pip_audit_entry_point",
             executable = True,
             cfg = "exec",
             doc = "Bazel py_binary target with python's pip-audit package entry point.",

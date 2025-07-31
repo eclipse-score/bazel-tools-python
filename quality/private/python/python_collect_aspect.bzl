@@ -1,7 +1,7 @@
 """Aspect that collects python targets information and output it to a provider."""
 
-load("@swf_bazel_rules_quality//quality/private/python:python_helper.bzl", "is_valid_label")
-load("@swf_bazel_rules_quality//quality/private/python:python_providers.bzl", "PythonCollectInfo")
+load("@bazel_tools_python//quality/private/python:python_helper.bzl", "is_valid_label")
+load("@bazel_tools_python//quality/private/python:python_providers.bzl", "PythonCollectInfo")
 
 def _get_collect_transitive_outputs(ctx):
     deps = []

@@ -29,7 +29,7 @@ To achieve that, a custom configuration rule must be created using the [`python_
 
 ```py
 # path/to/BUILD
-load("@swf_bazel_rules_quality//quality:defs.bzl", "python_tool_config")
+load("@bazel_tools_python//quality:defs.bzl", "python_tool_config")
 filegroup(
     name = "pyproject_toml",
     srcs = ["pyproject.toml"],
@@ -43,12 +43,12 @@ python_tool_config(
 Finally, each selected tool configuration can be overloaded with the newly created custom configuration target.  target overload shortcut can be added to the `.bazelrc` file:
 
 # .bazelrc
-build:pylint --@swf_bazel_rules_quality//quality:quality_pylint_config=//path/to:pylint_config
-build:mypy --@swf_bazel_rules_quality//quality:quality_mypy_config=//path/to:python_config
-build:black --@swf_bazel_rules_quality//quality:quality_black_config=//path/to:python_config
-build:isort --@swf_bazel_rules_quality//quality:quality_isort_config=//path/to:python_config
-build:ruff_check --@swf_bazel_rules_quality//quality:quality_ruff_config=//path/to:python_config
-build:ruff_format --@swf_bazel_rules_quality//quality:quality_ruff_config=//path/to:python_config
+build:pylint --@bazel_tools_python//quality:quality_pylint_config=//path/to:pylint_config
+build:mypy --@bazel_tools_python//quality:quality_mypy_config=//path/to:python_config
+build:black --@bazel_tools_python//quality:quality_black_config=//path/to:python_config
+build:isort --@bazel_tools_python//quality:quality_isort_config=//path/to:python_config
+build:ruff_check --@bazel_tools_python//quality:quality_ruff_config=//path/to:python_config
+build:ruff_format --@bazel_tools_python//quality:quality_ruff_config=//path/to:python_config
 ```
 
 ### Basic Usage
@@ -73,21 +73,21 @@ Finally in the `.bazelrc` file we can configure the build for each tool.
 # .bazelrc
 
 build:pylint --output_groups=python_tool_output
-build:pylint --aspects=@swf_bazel_rules_quality//quality:defs.bzl%pylint_aspect
+build:pylint --aspects=@bazel_tools_python//quality:defs.bzl%pylint_aspect
 
 build:black --output_groups=python_tool_output
-build:black --aspects=@swf_bazel_rules_quality//quality:defs.bzl%black_aspect
+build:black --aspects=@bazel_tools_python//quality:defs.bzl%black_aspect
 
 build:isort --output_groups=python_tool_output
-build:isort --aspects=@swf_bazel_rules_quality//quality:defs.bzl%isort_aspect
+build:isort --aspects=@bazel_tools_python//quality:defs.bzl%isort_aspect
 
 build:mypy --output_groups=python_tool_output
-build:mypy --aspects=@swf_bazel_rules_quality//quality:defs.bzl%mypy_aspect
+build:mypy --aspects=@bazel_tools_python//quality:defs.bzl%mypy_aspect
 
 build:ruff_check --output_groups=python_tool_output
-build:ruff_check --aspects=@swf_bazel_rules_quality//quality:defs.bzl%ruff_check_aspect
+build:ruff_check --aspects=@bazel_tools_python//quality:defs.bzl%ruff_check_aspect
 build:ruff_format --output_groups=python_tool_output
-build:ruff_format --aspects=@swf_bazel_rules_quality//quality:defs.bzl%ruff_format_aspect
+build:ruff_format --aspects=@bazel_tools_python//quality:defs.bzl%ruff_format_aspect
 ```
 
 ### Available Tools
@@ -163,7 +163,7 @@ To use the pip-audit rule, load it from the quality module and create a target w
 
 ```starlark
 # BUILD
-load("@swf_bazel_rules_quality//quality:defs.bzl", "pip_audit_rule")
+load("@bazel_tools_python//quality:defs.bzl", "pip_audit_rule")
 
 pip_audit_rule(
   name = "pip_audit",
@@ -193,14 +193,14 @@ To use a custom configuration file, one can add the following command line in th
 
 ```bash
 # .bazelrc
-build --@swf_bazel_rules_quality//quality:quality_pytest_config=//quality/private/python/support:awesome_pyproject
+build --@bazel_tools_python//quality:quality_pytest_config=//quality/private/python/support:awesome_pyproject
 ```
 
 To use a custom default dependency list, one can add the following command line in the `.bazelrc`:
 
 ```bash
 # .bazelrc
-build --@swf_bazel_rules_quality//quality/private/python:py_test_deps=//:py_custom_test_deps
+build --@bazel_tools_python//quality/private/python:py_test_deps=//:py_custom_test_deps
 ```
 
 ### How to use
@@ -209,7 +209,7 @@ The custom `py_pytest` rule is basically a drop-in replacement to Bazel's defaul
 
 ```bash
 # BUILD
-load("@swf_bazel_rules_quality//quality:defs.bzl", "py_pytest")
+load("@bazel_tools_python//quality:defs.bzl", "py_pytest")
 
 py_pytest(
     name = "test_dummy",

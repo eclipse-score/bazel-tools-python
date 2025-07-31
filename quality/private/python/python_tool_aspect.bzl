@@ -1,8 +1,8 @@
 """Aspect that call a tool runner on top of a python target."""
 
-load("@swf_bazel_rules_quality//quality/private/python:python_collect_aspect.bzl", "python_collect_aspect")
-load("@swf_bazel_rules_quality//quality/private/python:python_helper.bzl", "is_valid_label")
-load("@swf_bazel_rules_quality//quality/private/python:python_providers.bzl", "PythonCollectInfo", "PythonToolInfo")
+load("@bazel_tools_python//quality/private/python:python_collect_aspect.bzl", "python_collect_aspect")
+load("@bazel_tools_python//quality/private/python:python_helper.bzl", "is_valid_label")
+load("@bazel_tools_python//quality/private/python:python_providers.bzl", "PythonCollectInfo", "PythonToolInfo")
 
 _AVAILABLE_FEATURES = [
     # Tools that are able to refactor will automatically fix findings using this feature.
@@ -143,37 +143,37 @@ def _python_tool_aspect(tool, runner, config):
     )
 
 pylint_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:pylint_entry_point",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:pylint",
-    config = "@swf_bazel_rules_quality//quality:quality_pylint_config",
+    tool = "@bazel_tools_python//quality/private/python:pylint_entry_point",
+    runner = "@bazel_tools_python//quality/private/python/tools:pylint",
+    config = "@bazel_tools_python//quality:quality_pylint_config",
 )
 
 black_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:black_entry_point",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:black",
-    config = "@swf_bazel_rules_quality//quality:quality_black_config",
+    tool = "@bazel_tools_python//quality/private/python:black_entry_point",
+    runner = "@bazel_tools_python//quality/private/python/tools:black",
+    config = "@bazel_tools_python//quality:quality_black_config",
 )
 
 isort_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:isort_entry_point",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:isort",
-    config = "@swf_bazel_rules_quality//quality:quality_isort_config",
+    tool = "@bazel_tools_python//quality/private/python:isort_entry_point",
+    runner = "@bazel_tools_python//quality/private/python/tools:isort",
+    config = "@bazel_tools_python//quality:quality_isort_config",
 )
 
 mypy_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:mypy_entry_point",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:mypy",
-    config = "@swf_bazel_rules_quality//quality:quality_mypy_config",
+    tool = "@bazel_tools_python//quality/private/python:mypy_entry_point",
+    runner = "@bazel_tools_python//quality/private/python/tools:mypy",
+    config = "@bazel_tools_python//quality:quality_mypy_config",
 )
 
 ruff_check_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:ruff_entry_point",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:ruff_check",
-    config = "@swf_bazel_rules_quality//quality:quality_ruff_config",
+    tool = "@bazel_tools_python//quality/private/python:ruff_entry_point",
+    runner = "@bazel_tools_python//quality/private/python/tools:ruff_check",
+    config = "@bazel_tools_python//quality:quality_ruff_config",
 )
 
 ruff_format_aspect = _python_tool_aspect(
-    tool = "@swf_bazel_rules_quality//quality/private/python:ruff_entry_point",
-    runner = "@swf_bazel_rules_quality//quality/private/python/tools:ruff_format",
-    config = "@swf_bazel_rules_quality//quality:quality_ruff_config",
+    tool = "@bazel_tools_python//quality/private/python:ruff_entry_point",
+    runner = "@bazel_tools_python//quality/private/python/tools:ruff_format",
+    config = "@bazel_tools_python//quality:quality_ruff_config",
 )

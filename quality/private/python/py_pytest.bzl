@@ -2,14 +2,14 @@
 
 load("@rules_python//python:defs.bzl", "py_test")
 
-_CONFIG = "@swf_bazel_rules_quality//quality:quality_pytest_config"
+_CONFIG = "@bazel_tools_python//quality:quality_pytest_config"
 
-_RUNNER_LABEL = "@swf_bazel_rules_quality//quality/private/python/tools:pytest_runner"
+_RUNNER_LABEL = "@bazel_tools_python//quality/private/python/tools:pytest_runner"
 _RUNNER_FILE = "pytest_runner.py"
 
 _BASE_SRCS = []
 _BASE_DATA = []
-_BASE_DEPS = "@swf_bazel_rules_quality//quality/private/python:py_test_deps"
+_BASE_DEPS = "@bazel_tools_python//quality/private/python:py_test_deps"
 
 def py_pytest(
         name,

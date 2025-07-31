@@ -1,7 +1,7 @@
 # Copyright (C) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG). All rights reserved.
 
+load("@bazel_tools_python_pip_hub//:loaders.bzl", "pkg")
 load("@rules_python//python:defs.bzl", "py_binary")
-load("@swf_bazel_rules_quality_pip_hub//:loaders.bzl", "pkg")
 
 package(default_visibility = ["//visibility:public"])
 

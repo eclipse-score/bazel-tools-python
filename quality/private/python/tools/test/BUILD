@@ -1,6 +1,6 @@
+load("@bazel_tools_python//quality:defs.bzl", "py_pytest")
+load("@bazel_tools_python_pip_hub//:loaders.bzl", "pkg")
 load("@rules_python//python:defs.bzl", "py_library")
-load("@swf_bazel_rules_quality//quality:defs.bzl", "py_pytest")
-load("@swf_bazel_rules_quality_pip_hub//:loaders.bzl", "pkg")
 
 py_pytest(
     name = "test_isort_runner",

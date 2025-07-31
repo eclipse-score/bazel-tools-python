@@ -1,5 +1,5 @@
+load("@bazel_tools_python_pip_hub//:loaders.bzl", "pkg")
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
-load("@swf_bazel_rules_quality_pip_hub//:loaders.bzl", "pkg")
 
 py_binary(
     name = "pylint_entry_point",
@@ -23,7 +23,7 @@ py_library(
 
 label_flag(
     name = "py_test_deps",
-    build_setting_default = "@swf_bazel_rules_quality//quality/private/python:default_py_test_deps",
+    build_setting_default = "@bazel_tools_python//quality/private/python:default_py_test_deps",
     visibility = ["//visibility:public"],
 )
 
