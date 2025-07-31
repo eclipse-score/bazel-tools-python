@@ -1,0 +1,71 @@
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+# Same as Black.
+line-length = 120
+indent-width = 4
+target-version = "py39"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--tb=short",
+    "--import-mode=importlib",
+    "--ignore=third_party",
+    "--ignore=playbooks",
+    "--ignore-glob=bazel*",
+    "--ignore-glob=.*cache",
+]
+filterwarnings = [
+    "ignore::Warning:_pytest*:",
+    "ignore::DeprecationWarning:pytest_pylint*:",
+]
+
+[tool.pylint]
+max-line-length=120
+
+[tool.mypy]
+disallow_untyped_defs = false
+explicit_package_bases = true
+incremental = false
+python_version = "3.9"
+
+[tool.pylint.messages_control]
+disable = [
+    "duplicate-code",
+    "logging-fstring-interpolation",
+]
+
+[tool.coverage.run]
+# Do not run coverage for test files.
+omit = [
+   "*/test_*.py",
+]
+# Activate branch coverage analysis.
+branch = true
+
+[tool.coverage.report]
+# List the lines that were not covered by tests.
+show_missing = true
+# Restrict coverage reporting to the 'validation' targets.
+include = ["*/quality/*", "*/tools/*"]
+# Omit external files.
+omit = ["*/external/*"]
+# Exclude lines that are not supposed to have coverage
+exclude_lines = [
+   "pragma: no cover",
+   "if __name__ == .__main__.:",
+]

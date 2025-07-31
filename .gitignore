@@ -1,0 +1,8 @@
+*.orig
+.vscode
+/out
+__pycache__
+bazel-*
+/.coverage
+/dist
+*.stamp

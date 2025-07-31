@@ -25,6 +25,11 @@ setup_starpls(
 copyright_checker(
     name = "copyright",
     srcs = [
+        "bazel",
+        "quality",
+        "scripts",
+        "test",
+        "third_party",
         "//:BUILD",
         "//:MODULE.bazel",
     ],
@@ -34,7 +39,7 @@ copyright_checker(
 )
 
 dash_license_checker(
-    src = "//examples:cargo_lock",
+    src = "//third_party/pip:requirement_locks",
     file_type = "",  # let it auto-detect based on project_config
     project_config = PROJECT_CONFIG,
     visibility = ["//visibility:public"],
@@ -46,3 +51,7 @@ use_format_targets()
 docs(
     source_dir = "docs",
 )
+
+exports_files([
+    "pyproject.toml",
+])
