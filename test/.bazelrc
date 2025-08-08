@@ -1,5 +1,3 @@
-# Copyright (C) 2025 Bayerische Motoren Werke Aktiengesellschaft (BMW AG). All rights reserved.
-
 common --lockfile_mode=off
 common --enable_platform_specific_config
 
