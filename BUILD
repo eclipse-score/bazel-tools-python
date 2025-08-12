@@ -12,7 +12,6 @@
 # *******************************************************************************
 load("@score_cr_checker//:cr_checker.bzl", "copyright_checker")
 load("@score_dash_license_checker//:dash.bzl", "dash_license_checker")
-load("@score_docs_as_code//:docs.bzl", "docs")
 load("@score_format_checker//:macros.bzl", "use_format_targets")
 load("//:project_config.bzl", "PROJECT_CONFIG")
 
@@ -41,10 +40,6 @@ dash_license_checker(
 
 # Add target for formatting checks
 use_format_targets()
-
-docs(
-    source_dir = "docs",
-)
 
 exports_files([
     "pyproject.toml",

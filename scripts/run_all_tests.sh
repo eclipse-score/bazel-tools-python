@@ -49,7 +49,8 @@ run_command(){
 }
 
 # Run bazel test with workspace mode and python 3.9.
-run_command "bazel --output_base=$HOME/.cache/bazel_tools_python/workspace_output_base test --config=use_workspace_mode --config=python_3_9 //..." "tests (workspace mode and python 3.9)"
+# TODO re-enable once the score targets (like //:docs) support bazel workspace mode and more than python 3.12
+# run_command "bazel --output_base=$HOME/.cache/bazel_tools_python/workspace_output_base test --config=use_workspace_mode --config=python_3_9 //..." "tests (workspace mode and python 3.9)"
 
 # Run bazel test with bzlmod mode and python 3.12.
 run_command "bazel --output_base=$HOME/.cache/bazel_tools_python/python_3_12_output_base test --config=python_3_12 //..." "tests (bzlmod mode and python 3.12)"
