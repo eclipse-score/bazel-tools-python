@@ -1,0 +1,86 @@
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint]
+max-line-length = 120
+# Important to ignore no-value-for-parameter warnings for tests 
+# with decorators that change the function signature
+signature-mutators = ["unittest.mock.patch"]
+
+[tool.pylint.messages_control]
+disable = [
+    "duplicate-code",
+    "logging-fstring-interpolation",
+]
+
+[tool.mypy]
+disallow_untyped_defs = false
+explicit_package_bases = true
+incremental = false
+# Avoid having to add type hints to internal variables that are initialized,
+# but mypy can't be certain about the type of the variable.
+disable_error_code = ["var-annotated"]
+
+[tool.ruff]
+# Same as Black.
+line-length = 120
+indent-width = 4
+target-version = "py39"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+log_level = "NOTSET"
+
+addopts = [
+    "-vv",
+    "--strict-markers",
+    "--strict-config",
+    "--color=yes",
+    "--benchmark-columns=Min,Max,Median"
+]
+
+testpaths = ["tests"]
+
+required_plugins = [
+    "pytest-benchmark",
+    "pytest-bdd",
+    "pytest-mock",
+    "pytest-rerunfailures",
+    "pytest-timeout"
+]
+
+markers = [
+    "windows: Tests which only can run on Windows.",
+    "linux: Tests which only can run on Linux.",
+    "ci: Tests which should only run on CI.",
+    "no_ci: Tests which should not run on CI."
+]
+
+# Makes any test maked with @pytest.mark.xfail fail the test suite if it
+# unexpectedly passes.
+xfail_strict = true
+
+# Treat all warnings as errors.
+filterwarnings = "error"
+
+[tool.coverage.run]
+# Activate branch coverage analysis.
+branch = true
+
+[tool.coverage.report]
+# Fail if coverage is less than 100%.
+fail_under = 98
+# List the lines that were not covered by tests.
+show_missing = true

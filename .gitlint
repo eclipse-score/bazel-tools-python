@@ -1,0 +1,34 @@
+# Available rules:
+#
+#   T1: title-max-length
+#   T2: title-trailing-whitespace
+#   T3: title-trailing-punctuation (disabled)
+#   T4: title-hard-tab
+#   T5: title-must-not-contain-word (disabled)
+#   T6: title-leading-whitespace
+#   T7: title-match-regex
+#   B1: body-max-line-length
+#   B2: body-trailing-whitespace
+#   B3: body-hard-tab
+#   B4: body-first-line-empty
+#   B5: body-min-length (disabled)
+#   B6: body-is-missing (disabled)
+#   B7: body-changed-file-mention (disabled)
+#
+# See http://jorisroovers.github.io/gitlint/rules/ for a full description.
+[general]
+ignore=T3,T5,B5,B6,B7
+# Ensure every title starts with a capital letter
+[title-match-regex]
+regex=^([A-Z]|(\[[a-z-]+\]))\w*
+
+[body-max-line-length]
+line-length=80
+
+[title-max-length]
+line-length=80
+
+# Allow lines starting with URLs to pass line length limit
+[ignore-by-body]
+regex=^https?:\/\/
+ignore=body-max-line-length

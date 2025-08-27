@@ -1,0 +1,14 @@
+[tool.pytest.ini_options]
+log_level = "NOTSET"
+
+addopts = [
+    "-vv",
+    "--strict-markers",
+    "--strict-config",
+]
+
+testpaths = ["tests"]
+
+required_plugins = [
+    "pytest-loop",
+]
