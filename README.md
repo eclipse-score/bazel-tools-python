@@ -87,7 +87,7 @@ Add this to your `MODULE.bazel` file.
 ```python
 # MODULE.bazel
 
-bazel_dep(name = "bazel_tools_python", version = "<version>")
+bazel_dep(name = "score_bazel_tools_python", version = "<version>", repo_name = "bazel_tools_python")
 ```
 
 To generate Bazel integrity value, one can use the following command:
