@@ -57,8 +57,7 @@ The following table lists all known vulnerabilities that could not be fixed:
 | ---------- | ------------------- | ------------------ | ------------- | -------------- | ------------------------------------ |
 | urllib3    | GHSA-48p4-8xcf-vxj5 | 2.2.3              | 2.5.0         | 3.8            | Fixed package requires Python >= 3.9 |
 | urllib3    | GHSA-pq67-6m6q-mj2v | 2.2.3              | 2.5.0         | 3.8            | Fixed package requires Python >= 3.9 |
-| pip        | GHSA-4xh5-x5gv-qwph | 25.0.1             | 25.2          | 3.8            | Fixed package requires Python >= 3.9 |
-| pip        | GHSA-4xh5-x5gv-qwph | 25.2               | -             | All            | Waiting for an open source fix       |
+| pip        | GHSA-4xh5-x5gv-qwph | 25.0.1             | 25.3          | 3.8            | Fixed package requires Python >= 3.9 |
 
 ### Vulnerable Python Versions
 

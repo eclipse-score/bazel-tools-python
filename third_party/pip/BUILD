@@ -50,12 +50,6 @@ EXTRA_ARGS = [
 [
     pip_audit_rule(
         name = "pip_audit_requirements_{}".format(version.replace(".", "_")),
-        # The list of ignored vulnerabilities should ideally be empty, but sometimes a certain vulnerability
-        # does not have a fix yet. In that case, we ignore it with `--ignore-vul` to avoid CI failures.
-        # Keep this in sync with SECURITY.md.
-        ignore_vulnerability = [
-            "GHSA-4xh5-x5gv-qwph",  # Added because there is no fix yet for pip 25.2.
-        ],
         requirement = "requirements_lock_{}.txt".format(version.replace(".", "_")),
     )
     for version in PYTHON_VERSIONS
