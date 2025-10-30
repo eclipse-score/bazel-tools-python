@@ -80,8 +80,8 @@ use_repo(rules_python_pip_hub, "test_pip_hub")
 # Dependencies from bazel_tools_python. #
 ###########################
 
-bazel_dep(name = "bazel_tools_python", version = "3.6.0")
+bazel_dep(name = "score_bazel_tools_python", version = "0.1.2", repo_name = "bazel_tools_python")
 local_path_override(
-    module_name = "bazel_tools_python",
+    module_name = "score_bazel_tools_python",
     path = "..",
 )
