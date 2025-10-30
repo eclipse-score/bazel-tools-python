@@ -28,6 +28,9 @@ def _pip_audit_rule_impl(ctx):
     requirement_file = ctx.file.requirement
 
     args_list = ["--disable-pip"]
+    if ctx.attr.ignore_vulnerability:
+        for vulnerability in ctx.attr.ignore_vulnerability:
+            args_list.extend(["--ignore-vuln", vulnerability])
     if ctx.attr.no_deps:
         args_list.append("--no-deps")
     if ctx.attr.index_url:
@@ -55,6 +58,13 @@ def _pip_audit_rule_impl(ctx):
 pip_audit_rule = rule(
     implementation = _pip_audit_rule_impl,
     attrs = {
+        "ignore_vulnerability": attr.string_list(
+            default = [],
+            doc = (
+                "Optional. If set, pip-audit will ignore a specific set of vulnerabilities by their IDs." +
+                "If not provided, all vulnerabilities will be checked."
+            ),
+        ),
         "index_url": attr.string(
             default = "",
             doc = (
