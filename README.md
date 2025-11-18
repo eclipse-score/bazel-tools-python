@@ -37,7 +37,7 @@ It's important to note that this repository does not supply python toolchains bu
 Additionaly, one must have the following bazel repositories already in place:
 
 - bazel_skylib >= 1.7.1
-- rules_python >= 0.40.0
+- rules_python >= 1.4.1
 
 ### Select python pip hub version
 
