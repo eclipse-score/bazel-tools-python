@@ -47,29 +47,15 @@ load("@rules_python//python:repositories.bzl", "python_register_toolchains")  # 
 ]
 
 load("@rules_python//python:pip.bzl", "pip_parse")
-load("@test_python_3_10//:defs.bzl", python_3_10_interpreter = "interpreter")  # buildifier: disable=out-of-order-load
-load("@test_python_3_11//:defs.bzl", python_3_11_interpreter = "interpreter")  # buildifier: disable=out-of-order-load
-load("@test_python_3_12//:defs.bzl", python_3_12_interpreter = "interpreter")  # buildifier: disable=out-of-order-load
-load("@test_python_3_8//:defs.bzl", python_3_8_interpreter = "interpreter")  # buildifier: disable=out-of-order-load
-load("@test_python_3_9//:defs.bzl", python_3_9_interpreter = "interpreter")  # buildifier: disable=out-of-order-load
-
-# buildifier: disable=unsorted-dict-items
-python_interpreter_versions = {
-    "3.8": python_3_8_interpreter,
-    "3.9": python_3_9_interpreter,
-    "3.10": python_3_10_interpreter,
-    "3.11": python_3_11_interpreter,
-    "3.12": python_3_12_interpreter,
-}
 
 [
     pip_parse(
         name = "test_pip_{}".format(version.replace(".", "_")),
         extra_pip_args = ["--no-cache-dir"],
-        python_interpreter_target = python_interpreter_versions[version],
+        python_interpreter_target = "@test_python_{}_host//:python".format(version.replace(".", "_")),
         requirements_lock = "@bazel_tools_python_test//pip:requirements_lock_{}.txt".format(version.replace(".", "_")),
     )
-    for version in python_interpreter_versions
+    for version in PYTHON_VERSIONS
 ]
 
 load("@test_pip_3_10//:requirements.bzl", pip_install_deps_py_3_10 = "install_deps")  # buildifier: disable=out-of-order-load
