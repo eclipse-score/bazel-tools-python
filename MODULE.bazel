@@ -17,20 +17,13 @@ module(
     repo_name = "bazel_tools_python",
 )
 
-# Checker rule for CopyRight checks/fixs
-bazel_dep(name = "score_cr_checker", version = "0.3.1", dev_dependency = True)
-bazel_dep(name = "score_python_basics", version = "0.3.4", dev_dependency = True)
-
-# Dash license checker
-bazel_dep(name = "score_dash_license_checker", version = "0.1.2", dev_dependency = True)
-
 # Format checker
 bazel_dep(name = "score_format_checker", version = "0.1.1", dev_dependency = True)
 bazel_dep(name = "aspect_rules_lint", version = "1.4.4", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2", dev_dependency = True)
 
 # docs-as-code
-bazel_dep(name = "score_docs_as_code", version = "1.0.1", dev_dependency = True)
+bazel_dep(name = "score_tooling", version = "1.0.4", dev_dependency = True)
 bazel_dep(name = "platforms", version = "0.0.11", dev_dependency = True)
 
 # Unfortunately bazel_skylib can not be dev_dependency because we use some of its libraries.
