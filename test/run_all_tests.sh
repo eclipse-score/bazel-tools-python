@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # *******************************************************************************
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
@@ -10,7 +11,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-#!/usr/bin/env bash
+
 set -u
 
 GREEN='\033[0;32m'
