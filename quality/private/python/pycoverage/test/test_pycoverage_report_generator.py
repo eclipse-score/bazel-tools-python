@@ -60,4 +60,3 @@ def test_pycoverage_reporter_main(mocker, caplog, reports_file, st_size, output_
 
     if reports_file == "lcov_files_no_py_targets.tmp":
         assert "No python coverage reports found." in caplog.text
-        return

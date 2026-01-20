@@ -20,17 +20,6 @@ from quality.private.python.tools import python_tool_common
 WOULD_REFORMAT_MSG = "would reformat"
 
 
-def _removeprefix(text: str, prefix: str) -> str:
-    """Remove a certain prefix from a a given text.
-
-    This function is supposed to add backwards compartibility with python 3.8 as
-    python versions equal or greater than 3.9 already offer this as a built in.
-    """
-    if text.startswith(prefix):
-        return text[len(prefix) :].strip()
-    return text
-
-
 def get_black_command(aspect_arguments: python_tool_common.AspectArguments) -> t.List[str]:
     """Returns the command to run a black subprocess."""
 
@@ -54,7 +43,7 @@ def black_output_parser(tool_output: python_tool_common.SubprocessInfo) -> pytho
 
     for line in tool_output.stderr.splitlines():
         if line.startswith(WOULD_REFORMAT_MSG):
-            file = _removeprefix(line, WOULD_REFORMAT_MSG)
+            file = line.removeprefix(WOULD_REFORMAT_MSG)
             findings += [
                 python_tool_common.Finding(
                     path=pathlib.Path(file),

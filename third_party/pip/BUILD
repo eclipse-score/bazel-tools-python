@@ -10,21 +10,14 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@bazel_tools_python//bazel/toolchains/python:versions.bzl", "PYTHON_VERSIONS")
+load("@bazel_tools_python//bazel/toolchains/python:versions.bzl", "LEGACY_PYTHON_VERSIONS", "PYTHON_VERSIONS")
 load("@bazel_tools_python//quality:defs.bzl", "pip_audit_rule")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 
 # Rule compile_pip_requirements handles pip requirements.
-# It has two important targets:
-#  - requirements.update: A runnable target that updates the lock file
-#  - requirements_test: A test target that validates the lock file
-#
-# To run the update script in Windows, make sure your user or system .bazelrc has the
-# following set:
-#   startup --windows_enable_symlinks
-#   build --enable_runfiles
-# This is necessary until `rules_python` is updated to 1.0.0, which fixes it.
-# Check https://github.com/bazel-contrib/rules_python/issues/1431
+# It adds two important targets per Python version:
+#  - requirements_<PYTHON_VERSION_WITH_UNDERLINE>.update: A runnable target that updates the lock file
+#  - requirements_<PYTHON_VERSION_WITH_UNDERLINE>.test: A test target that validates the lock file
 
 REQUIREMENTS_SOURCE = "requirements.in"
 
@@ -36,7 +29,7 @@ EXTRA_ARGS = [
 [
     compile_pip_requirements(
         name = "requirements_{}".format(version.replace(".", "_")),
-        src = REQUIREMENTS_SOURCE,
+        src = REQUIREMENTS_SOURCE + ("_legacy" if version in LEGACY_PYTHON_VERSIONS else "_stable"),
         extra_args = EXTRA_ARGS,
         requirements_txt = "requirements_lock_{}.txt".format(version.replace(".", "_")),
         # Manual tag is needed because each pip requirement should be tested with its

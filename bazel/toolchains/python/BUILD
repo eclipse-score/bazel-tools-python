@@ -11,7 +11,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "bool_setting")
-load("@bazel_tools_python//bazel/toolchains/python:versions.bzl", "PYTHON_VERSIONS", "unsupported_python_configuration_error")
+load("@bazel_tools_python//bazel/toolchains/python:versions.bzl", "LEGACY_PYTHON_VERSIONS", "PYTHON_VERSIONS", "legacy_python_warning", "unsupported_python_configuration_error")
 load("@rules_python//python:defs.bzl", "py_runtime_pair")
 
 bool_flag(
@@ -70,6 +70,14 @@ config_setting(
         toolchain_type = "@rules_python//python:toolchain_type",
     )
     for version in PYTHON_VERSIONS
+]
+
+[
+    legacy_python_warning(
+        name = "legacy_python_{}_warning".format(version.replace(".", "_")),
+        python_version = version,
+    )
+    for version in LEGACY_PYTHON_VERSIONS
 ]
 
 #############################################

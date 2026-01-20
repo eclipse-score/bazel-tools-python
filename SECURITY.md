@@ -49,7 +49,7 @@ This project includes:
 
 Known vulnerabilities may vary according to the selected Python version.
 
-You can check our latest constraints against vulnerable package versions in our [requirements.in file](third_party/pip/requirements.in).
+You can check our latest constraints against vulnerable package versions in our [requirements.in_stable file](third_party/pip/requirements.in_stable) and/or [requirements.in_legacy file](third_party/pip/requirements.in_legacy) depending on which Python version the dependency is targeted to. See [Tool Versions](README.md#tool-versions) for more information about legacy and stable python versions;
 
 The following table lists all known vulnerabilities that could not be fixed:
 

@@ -15,13 +15,13 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-_VERSION = "1.4.1"  # Update `README.md` if you change this.
+_VERSION = "1.7.0"  # Update `README.md` if you change this.
 
 def rules_python():
     maybe(
         http_archive,
         name = "rules_python",
-        sha256 = "9f9f3b300a9264e4c77999312ce663be5dee9a56e361a1f6fe7ec60e1beef9a3",
+        sha256 = "f609f341d6e9090b981b3f45324d05a819fd7a5a56434f849c761971ce2c47da",
         strip_prefix = "rules_python-{version}".format(version = _VERSION),
         urls = ["https://github.com/bazel-contrib/rules_python/releases/download/{version}/rules_python-{version}.tar.gz".format(version = _VERSION)],
         patches = ["@bazel_tools_python//third_party/rules_python:rules_python.patch"],

@@ -51,9 +51,9 @@ run_command(){
 }
 
 if [ "${workspace}" == "all" -o "${workspace}" == "main" ];then
-	# Run bazel test with workspace mode and python 3.9.
+	# Run bazel test with workspace mode and python 3.10.
 	# TODO re-enable once the score targets (like //:docs) support bazel workspace mode and more than python 3.12
-	# run_command "bazel --output_base=$HOME/.cache/bazel_tools_python/workspace_output_base test --config=use_workspace_mode --config=python_3_9 //..." "tests (workspace mode and python 3.9)"
+	# run_command "bazel --output_base=$HOME/.cache/bazel_tools_python/workspace_output_base test --config=use_workspace_mode --config=python_3_10 //..." "tests (workspace mode and python 3.10)"
 
 	# Run bazel test with bzlmod mode and python 3.12.
 	run_command "bazel --output_base=$HOME/.cache/bazel_tools_python/python_3_12_output_base test --config=python_3_12 //..." "tests (bzlmod mode and python 3.12)"
@@ -83,6 +83,11 @@ fi
 if [ "${workspace}" == "all" -o "${workspace}" == "test" ];then
 	# Run test workspace tests.
 	run_command "test/run_all_tests.sh" "tests (in test workspace)"
+fi
+
+if [ "${workspace}" == "all" -o "${workspace}" == "test_single_version" ];then
+	# Run single Python version test workspace tests.
+	run_command "test_single_version/run_all_tests.sh" "tests (test_single_version workspace)"
 fi
 
 if [ "${workspace}" == "all" -o "${workspace}" == "main" ];then
