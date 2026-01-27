@@ -15,20 +15,20 @@
 
 load("@bazel_tools_python//bazel/rules:rules_python_pip_hub.bzl", "rules_python_pip_hub")
 load("@bazel_tools_python//bazel/toolchains/python:versions.bzl", "PYTHON_VERSIONS")
-load("@bazel_tools_python_pip_3_8//:requirements.bzl", pip_install_deps_py_3_8 = "install_deps")  # buildifier: disable=out-of-order-load
-load("@bazel_tools_python_pip_3_9//:requirements.bzl", pip_install_deps_py_3_9 = "install_deps")  # buildifier: disable=out-of-order-load
 load("@bazel_tools_python_pip_3_10//:requirements.bzl", pip_install_deps_py_3_10 = "install_deps")  # buildifier: disable=out-of-order-load
 load("@bazel_tools_python_pip_3_11//:requirements.bzl", pip_install_deps_py_3_11 = "install_deps")  # buildifier: disable=out-of-order-load
 load("@bazel_tools_python_pip_3_12//:requirements.bzl", pip_install_deps_py_3_12 = "install_deps")  # buildifier: disable=out-of-order-load
+load("@bazel_tools_python_pip_3_13//:requirements.bzl", pip_install_deps_py_3_13 = "install_deps")  # buildifier: disable=out-of-order-load
+load("@bazel_tools_python_pip_3_14//:requirements.bzl", pip_install_deps_py_3_14 = "install_deps")  # buildifier: disable=out-of-order-load
 
 def python_pip_hub():
     """Load all rules python pip hub and configure our custom pip hub."""
 
-    pip_install_deps_py_3_8()
-    pip_install_deps_py_3_9()
     pip_install_deps_py_3_10()
     pip_install_deps_py_3_11()
     pip_install_deps_py_3_12()
+    pip_install_deps_py_3_13()
+    pip_install_deps_py_3_14()
 
     rules_python_pip_hub(
         name = "bazel_tools_python_pip_hub",

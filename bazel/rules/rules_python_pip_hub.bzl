@@ -143,8 +143,9 @@ This is needed so this custom pip hub can select which rules python pip hub shou
 deps_to_config_map = {
             "@rules_python_pip_hub_3_10": "@your_repo_name//label/to/your:config_setting_3_10",
             "@rules_python_pip_hub_3_11": "@your_repo_name//label/to/your:config_setting_3_11",
-            "@rules_python_pip_hub_3_8": "@your_repo_name//label/to/your:config_setting_3_8",
-            "@rules_python_pip_hub_3_9": "@your_repo_name//label/to/your:config_setting_3_9",
+            "@rules_python_pip_hub_3_12": "@your_repo_name//label/to/your:config_setting_3_12",
+            "@rules_python_pip_hub_3_13": "@your_repo_name//label/to/your:config_setting_3_13",
+            "@rules_python_pip_hub_3_14": "@your_repo_name//label/to/your:config_setting_3_14",
         }
 ```
 

@@ -16,7 +16,7 @@ load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 # Rule compile_pip_requirements handles pip requirements.
 # It has two important targets:
 #  - requirements.update: A runnable target that updates the lock file
-#  - requirements_test: A test target that validates the lock file
+#  - requirements.test: A test target that validates the lock file
 
 REQUIREMENTS_SOURCE = "requirements.in"
 
