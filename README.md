@@ -26,18 +26,30 @@ Each offered tool has it own README document and can be independently activated 
 | [pycoverage](quality/private/python/README.md)  | Code coverage tool      | aspect     | Python              | yes       | yes    |
 | [pip_audit](quality/private/python/README.md)   | Vulnerability checker   | rule       | Python              | yes       | yes    |
 
+## Tool Versions
+
+Tool versions are handled differently depending on the Python version.
+Legacy (end of life) Python versions use different tool versions than the stable supported Python versions.
+
+Declaration of which Python versions are considered legacy can be found in the file
+[bazel/toolchains/python/versions.bzl](bazel/toolchains/python/versions.bzl).
+
+The tool versions are declared in [third_party/pip/requirements.in_legacy](third_party/pip/requirements.in_legacy) and
+[third_party/pip/requirements.in_stable](third_party/pip/requirements.in_stable) respectively.
+
 ## How to use bazel_tools_python
 
 The next sections explain the steps to achieve a proper config for each Bazel dependency manager. For a fully working setup, take a look at the [test workspace](test) as an example.
 
 ### Requirements
 
-It's important to note that this repository does not supply python toolchains but only its pip dependencies. Therefore one must set up its own python toolchain. This repository support major python versions from `3.8` to `3.12`.
+It's important to note that this repository does not supply python toolchains but only its pip dependencies.
+Therefore one must set up its own python toolchain. This repository support major python versions from `3.8` to `3.14`.
 
 Additionaly, one must have the following bazel repositories already in place:
 
-- bazel_skylib >= 1.7.1
-- rules_python >= 1.4.1
+- bazel_skylib >= 1.9.0
+- rules_python >= 1.7.0
 
 ### Select python pip hub version
 
