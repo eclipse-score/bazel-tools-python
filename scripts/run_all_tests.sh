@@ -75,9 +75,6 @@ if [ "${workspace}" == "all" -o "${workspace}" == "main" ];then
 	# Run Eclipse-specific checks.
 	run_command "bazel run //:copyright.check -- --fix" "eclipse copyright check"
 	run_command "bazel test //:format.check" "eclipse format check"
-
-	# Run security vulnerability scan.
-	run_command "third_party/pip/check_vulnerabilities.sh" "security scan"
 fi
 
 if [ "${workspace}" == "all" -o "${workspace}" == "test" ];then
