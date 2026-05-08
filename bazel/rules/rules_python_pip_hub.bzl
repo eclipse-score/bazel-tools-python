@@ -34,11 +34,17 @@ _INDIRECTIONS_TYPES = [
     "data",
 ]
 
-def _get_direct_deps(repo_ctx):
-    """Read a pip requirements.in file and return a list of direct dependencies."""
+def _read_and_parse_requirements(repo_ctx, postfix):
+    """Read a pip requirements file and return a list of dependencies (without version)."""
     requirements = []
 
-    lines = repo_ctx.read(repo_ctx.attr.requirements_in).split("\n")
+    # Check if file is existing. If not just return an empty list.
+    requirements_path_str = str(repo_ctx.path(repo_ctx.attr.requirements_in)) + postfix
+    requirements_path = repo_ctx.path(requirements_path_str)
+    if not requirements_path.exists:
+        return []
+
+    lines = repo_ctx.read(requirements_path_str).split("\n")
     for line in lines:
         line = line.strip()
         if not line:
@@ -48,11 +54,37 @@ def _get_direct_deps(repo_ctx):
         if line.startswith("--"):
             continue  # Skip possible pip custom configurations.
         if "==" not in line:
-            fail("Line '{}' in '{}' is missing a precise pinning via '=='.".format(line, str(repo_ctx.attr.requirements_in)) +
+            fail("Line '{}' in '{}' is missing a precise pinning via '=='.".format(line, str(repo_ctx.path(repo_ctx.attr.requirements_in)) + postfix) +
                  " While this is technically possible it violates our project best practices.")
         requirements.append(line.split("==", 1)[0])
 
     return requirements
+
+def _get_direct_deps(repo_ctx):
+    """Read pip requirements files and return a list of direct dependencies.
+
+    This will try to read the requirements.in file as well as
+    requirements.in_stable and requirements.in_legacy. In case one of those files
+    do not exist it will be simply skipped.
+
+    Returns:
+        list[str]: A list of unique direct dependencies found in the requirements files.
+    """
+    requirements = {}
+
+    for requirement in _read_and_parse_requirements(repo_ctx, ""):
+        requirements[requirement] = True
+
+    for requirement in _read_and_parse_requirements(repo_ctx, "_stable"):
+        requirements[requirement] = True
+
+    for requirement in _read_and_parse_requirements(repo_ctx, "_legacy"):
+        requirements[requirement] = True
+
+    if not requirements:
+        fail("No direct dependencies found in any requirements file. The created pip hub will be empty.")
+
+    return list(requirements.keys())
 
 def _generate_single_indirection(dep, deps_to_config_map, indirection_type):
     """Generate the requested dependency indirection for a given dependency to config map."""
@@ -141,10 +173,13 @@ This is needed so this custom pip hub can select which rules python pip hub shou
 
 ```
 deps_to_config_map = {
-            "@rules_python_pip_hub_3_10": "@your_repo_name//label/to/your:config_setting_3_10",
-            "@rules_python_pip_hub_3_11": "@your_repo_name//label/to/your:config_setting_3_11",
             "@rules_python_pip_hub_3_8": "@your_repo_name//label/to/your:config_setting_3_8",
             "@rules_python_pip_hub_3_9": "@your_repo_name//label/to/your:config_setting_3_9",
+            "@rules_python_pip_hub_3_10": "@your_repo_name//label/to/your:config_setting_3_10",
+            "@rules_python_pip_hub_3_11": "@your_repo_name//label/to/your:config_setting_3_11",
+            "@rules_python_pip_hub_3_12": "@your_repo_name//label/to/your:config_setting_3_12",
+            "@rules_python_pip_hub_3_13": "@your_repo_name//label/to/your:config_setting_3_13",
+            "@rules_python_pip_hub_3_14": "@your_repo_name//label/to/your:config_setting_3_14",
         }
 ```
 

@@ -1,3 +1,4 @@
+#!/bin/bash -e
 # *******************************************************************************
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
@@ -15,3 +16,5 @@ bazel run //third_party/pip:requirements_3_9.update --config=python_3_9 --config
 bazel run //third_party/pip:requirements_3_10.update --config=python_3_10 --config=use_workspace_mode
 bazel run //third_party/pip:requirements_3_11.update --config=python_3_11 --config=use_workspace_mode
 bazel run //third_party/pip:requirements_3_12.update --config=python_3_12 --config=use_workspace_mode
+bazel run //third_party/pip:requirements_3_13.update --config=python_3_13 --config=use_workspace_mode
+bazel run //third_party/pip:requirements_3_14.update --config=python_3_14 --config=use_workspace_mode

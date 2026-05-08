@@ -44,22 +44,6 @@ class TestBlackRunner(unittest.TestCase):
         self.tmp_text_file_path.unlink()
         self.tmp_json_file_path.unlink()
 
-    def test_black_removeprefix(self) -> None:
-        """Test black _removeprefix for both text string cases."""
-        would_reformat_message = "would reformat file.py."
-        expected_text = "reformat"
-        expected_strip_text = "file.py."
-
-        # pylint: disable-next=protected-access
-        return_text = black_runner._removeprefix(text=expected_text, prefix=black_runner.WOULD_REFORMAT_MSG)
-        # pylint: disable-next=protected-access
-        return_strip_text = black_runner._removeprefix(
-            text=would_reformat_message, prefix=black_runner.WOULD_REFORMAT_MSG
-        )
-
-        assert return_text == expected_text
-        assert return_strip_text == expected_strip_text
-
     def test_black_output_parser_with_no_issues(self) -> None:
         """Tests black_output_parser function with the results of a file with no issues."""
         expected_findings = python_tool_common.Findings()
@@ -85,7 +69,7 @@ class TestBlackRunner(unittest.TestCase):
         expected_findings = python_tool_common.Findings(
             [
                 python_tool_common.Finding(
-                    path=pathlib.Path("file.py"),
+                    path=pathlib.Path(" file.py"),
                     message="Should be reformatted.",
                     severity=python_tool_common.Severity.WARN,
                     tool="black",

@@ -10,7 +10,9 @@ build:python_3_9 --python=3.9
 build:python_3_10 --python=3.10
 build:python_3_11 --python=3.11
 build:python_3_12 --python=3.12
-build --config=python_3_8
+build:python_3_13 --python=3.13
+build:python_3_14 --python=3.14
+build --config=python_3_12
 build --@bazel_tools_python//quality:quality_pytest_config=//:awesome_pyproject
 build --@bazel_tools_python//quality/private/python:py_test_deps=//:py_custom_test_deps
 

@@ -58,11 +58,13 @@ load("@rules_python//python:pip.bzl", "pip_parse")
     for version in PYTHON_VERSIONS
 ]
 
+load("@test_pip_3_8//:requirements.bzl", pip_install_deps_py_3_8 = "install_deps")  # buildifier: disable=out-of-order-load
+load("@test_pip_3_9//:requirements.bzl", pip_install_deps_py_3_9 = "install_deps")  # buildifier: disable=out-of-order-load
 load("@test_pip_3_10//:requirements.bzl", pip_install_deps_py_3_10 = "install_deps")  # buildifier: disable=out-of-order-load
 load("@test_pip_3_11//:requirements.bzl", pip_install_deps_py_3_11 = "install_deps")  # buildifier: disable=out-of-order-load
 load("@test_pip_3_12//:requirements.bzl", pip_install_deps_py_3_12 = "install_deps")  # buildifier: disable=out-of-order-load
-load("@test_pip_3_8//:requirements.bzl", pip_install_deps_py_3_8 = "install_deps")  # buildifier: disable=out-of-order-load
-load("@test_pip_3_9//:requirements.bzl", pip_install_deps_py_3_9 = "install_deps")  # buildifier: disable=out-of-order-load
+load("@test_pip_3_13//:requirements.bzl", pip_install_deps_py_3_13 = "install_deps")  # buildifier: disable=out-of-order-load
+load("@test_pip_3_14//:requirements.bzl", pip_install_deps_py_3_14 = "install_deps")  # buildifier: disable=out-of-order-load
 
 pip_install_deps_py_3_8()
 
@@ -73,6 +75,10 @@ pip_install_deps_py_3_10()
 pip_install_deps_py_3_11()
 
 pip_install_deps_py_3_12()
+
+pip_install_deps_py_3_13()
+
+pip_install_deps_py_3_14()
 
 load("@bazel_tools_python//bazel/rules:rules_python_pip_hub.bzl", "rules_python_pip_hub")
 

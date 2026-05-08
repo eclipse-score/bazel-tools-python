@@ -23,6 +23,8 @@ build:python_3_9 --python=3.9
 build:python_3_10 --python=3.10
 build:python_3_11 --python=3.11
 build:python_3_12 --python=3.12
+build:python_3_13 --python=3.13
+build:python_3_14 --python=3.14
 build --config=python_3_12
 
 common --flag_alias=use_bazel_tools_python_toolchains=//bazel/toolchains/python:bazel_tools_python_toolchains

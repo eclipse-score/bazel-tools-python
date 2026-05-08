@@ -10,13 +10,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-load("@bazel_tools_python//bazel/toolchains/python:versions.bzl", "PYTHON_VERSIONS")
+load("@bazel_tools_python//bazel/toolchains/python:versions.bzl", "LEGACY_PYTHON_VERSIONS", "PYTHON_VERSIONS")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 
 # Rule compile_pip_requirements handles pip requirements.
 # It has two important targets:
-#  - requirements.update: A runnable target that updates the lock file
-#  - requirements_test: A test target that validates the lock file
+#  - requirements_<major>_<minor>.update: A runnable target that updates the lock file
+#  - requirements_<major>_<minor>.test: A test target that validates the lock file
 
 REQUIREMENTS_SOURCE = "requirements.in"
 
@@ -28,7 +28,7 @@ EXTRA_ARGS = [
 [
     compile_pip_requirements(
         name = "requirements_{}".format(version.replace(".", "_")),
-        src = REQUIREMENTS_SOURCE,
+        src = REQUIREMENTS_SOURCE + ("_legacy" if version in LEGACY_PYTHON_VERSIONS else "_stable"),
         extra_args = EXTRA_ARGS,
         requirements_txt = "requirements_lock_{}.txt".format(version.replace(".", "_")),
         tags = ["manual"],

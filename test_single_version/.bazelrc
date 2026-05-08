@@ -1,0 +1,29 @@
+common --lockfile_mode=off
+common --enable_platform_specific_config
+
+common:use_workspace_mode --noenable_bzlmod
+
+# Python toolchain configurations
+common --flag_alias=python=@rules_python//python/config_settings:python_version
+build:python_3_14 --python=3.14
+build --config=python_3_14
+build --@bazel_tools_python//quality:quality_pytest_config=//:pyproject_toml
+build --@bazel_tools_python//quality/private/python:py_test_deps=//tests:py_custom_test_deps
+
+build:pylint --output_groups=python_tool_output
+build:pylint --aspects=@bazel_tools_python//quality:defs.bzl%pylint_aspect
+
+build:black --output_groups=python_tool_output
+build:black --aspects=@bazel_tools_python//quality:defs.bzl%black_aspect
+
+build:isort --output_groups=python_tool_output
+build:isort --aspects=@bazel_tools_python//quality:defs.bzl%black_aspect
+
+build:mypy --output_groups=python_tool_output
+build:mypy --aspects=@bazel_tools_python//quality:defs.bzl%mypy_aspect
+
+build:ruff_check --output_groups=python_tool_output
+build:ruff_check --aspects=@bazel_tools_python//quality:defs.bzl%ruff_check_aspect
+
+build:ruff_format --output_groups=python_tool_output
+build:ruff_format --aspects=@bazel_tools_python//quality:defs.bzl%ruff_format_aspect
